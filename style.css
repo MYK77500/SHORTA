@@ -68,6 +68,14 @@ body {
   margin-top: 18px;
 }
 
+/* 💣 ANIMATION PULSE DOUCE AVEC PAUSE */
+@keyframes softPulse {
+  0% { transform: scale(1); }
+  10% { transform: scale(1.03); }
+  20% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
 .choice-card {
   flex: 1;
   max-width: 320px;
@@ -81,6 +89,17 @@ body {
   align-items: center;
   padding: 24px 14px;
   text-align: center;
+
+  animation: softPulse 4s infinite ease-in-out;
+}
+
+/* décalage pour effet naturel */
+.choice-card:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.choice-card:nth-child(3) {
+  animation-delay: 1s;
 }
 
 .choice-card .emoji {

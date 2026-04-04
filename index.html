@@ -1,46 +1,358 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SHORTA</title>
-  <link rel="stylesheet" href="style.css">
 
-  <!-- GOOGLE ANALYTICS -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V5KGDWV0FV"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-V5KGDWV0FV');
-  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #111111;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin: 0 0 12px 0;
+    }
+
+    .subtitle {
+      font-size: 22px;
+      color: #d1d5db;
+      margin: 0 0 38px 0;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .emoji-btn {
+      border: none;
+      border-radius: 28px;
+      width: 180px;
+      height: 180px;
+      font-size: 76px;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+    }
+
+    .emoji-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .emoji-btn:active {
+      transform: scale(0.98);
+    }
+
+    .emoji-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .happy {
+      background: #22c55e;
+    }
+
+    .neutral {
+      background: #f59e0b;
+    }
+
+    .sad {
+      background: #ef4444;
+    }
+
+    #status {
+      min-height: 28px;
+      font-size: 17px;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    .meta {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #9ca3af;
+      line-height: 1.6;
+    }
+
+    .error-box {
+      margin: 24px auto 0 auto;
+      max-width: 720px;
+      background: #1f1f1f;
+      border: 1px solid #333333;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: left;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      display: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 700px) {
+      .logo {
+        font-size: 42px;
+      }
+
+      .subtitle {
+        font-size: 18px;
+      }
+
+      .emoji-btn {
+        width: 140px;
+        height: 140px;
+        font-size: 60px;
+        border-radius: 22px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div class="logo">SHORTA</div>
+    <p class="subtitle">Comment s’est passée votre visite ?</p>
 
-<div class="page">
-  <div class="logo">SHORTA</div>
+    <div id="buttons" class="buttons hidden">
+      <button class="emoji-btn happy" data-value="happy">😀</button>
+      <button class="emoji-btn neutral" data-value="neutral">😐</button>
+      <button class="emoji-btn sad" data-value="sad">😞</button>
+    </div>
 
-  <h1 class="title">Vous avez aimé votre expérience ? ⭐</h1>
-  <p class="subtitle subtle">Réponse en 1 seconde</p>
+    <div id="status">Chargement...</div>
 
-  <div class="choices">
-    <a href="avis.html" class="choice-card green">
-      <div class="emoji">😊</div>
-      <div class="label">Parfait</div>
-    </a>
+    <div class="meta">
+      URL attendue : <strong>/kiosk/SALON_CODE/DEVICE_CODE</strong>
+      <br />
+      Exemple : <strong>/kiosk/CHELLES_TEST/TAB01</strong>
+    </div>
 
-    <a href="feedback.html" class="choice-card orange">
-      <div class="emoji">😐</div>
-      <div class="label">Moyen</div>
-    </a>
-
-    <a href="feedback.html" class="choice-card red">
-      <div class="emoji">😞</div>
-      <div class="label">Déçu</div>
-    </a>
+    <div id="errorBox" class="error-box"></div>
   </div>
-</div>
 
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+    const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co'
+    const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu'
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    const statusEl = document.getElementById('status')
+    const buttonsWrapEl = document.getElementById('buttons')
+    const errorBoxEl = document.getElementById('errorBox')
+    const buttons = document.querySelectorAll('.emoji-btn')
+
+    let currentSalon = null
+    let currentDevice = null
+    let currentSalonCode = null
+    let currentDeviceCode = null
+
+    function setStatus(message) {
+      statusEl.textContent = message
+    }
+
+    function showError(message) {
+      errorBoxEl.style.display = 'block'
+      errorBoxEl.textContent = message
+      console.error(message)
+    }
+
+    function hideError() {
+      errorBoxEl.style.display = 'none'
+      errorBoxEl.textContent = ''
+    }
+
+    function setButtonsDisabled(disabled) {
+      buttons.forEach((button) => {
+        button.disabled = disabled
+      })
+    }
+
+    function showButtons() {
+      buttonsWrapEl.classList.remove('hidden')
+    }
+
+    function parseKioskUrl() {
+      const path = window.location.pathname
+      const parts = path.split('/').filter(Boolean)
+
+      if (parts.length !== 3 || parts[0] !== 'kiosk') {
+        throw new Error(
+          'URL invalide.\n\nUtilise une URL au format :\n/kiosk/SALON_CODE/DEVICE_CODE\n\nExemple :\n/kiosk/CHELLES_TEST/TAB01'
+        )
+      }
+
+      return {
+        salonCode: decodeURIComponent(parts[1]),
+        deviceCode: decodeURIComponent(parts[2])
+      }
+    }
+
+    async function fetchSalonByCode(salonCode) {
+      const { data, error } = await supabase
+        .from('salons')
+        .select('id, salon_code, name, city, is_active')
+        .eq('salon_code', salonCode)
+        .single()
+
+      if (error) {
+        throw new Error('Salon introuvable : ' + error.message)
+      }
+
+      if (!data.is_active) {
+        throw new Error('Ce salon est désactivé.')
+      }
+
+      return data
+    }
+
+    async function fetchDeviceByCode(salonId, deviceCode) {
+      const { data, error } = await supabase
+        .from('devices')
+        .select('id, device_code, label, is_active')
+        .eq('salon_id', salonId)
+        .eq('device_code', deviceCode)
+        .single()
+
+      if (error) {
+        throw new Error('Device introuvable : ' + error.message)
+      }
+
+      if (!data.is_active) {
+        throw new Error('Ce device est désactivé.')
+      }
+
+      return data
+    }
+
+    async function boot() {
+      try {
+        hideError()
+        setStatus('Vérification du lien...')
+
+        const { salonCode, deviceCode } = parseKioskUrl()
+        currentSalonCode = salonCode
+        currentDeviceCode = deviceCode
+
+        setStatus('Connexion au salon...')
+
+        const salon = await fetchSalonByCode(salonCode)
+        const device = await fetchDeviceByCode(salon.id, deviceCode)
+
+        currentSalon = salon
+        currentDevice = device
+
+        showButtons()
+        setStatus('Prêt')
+      } catch (error) {
+        setStatus('Erreur de configuration')
+        showError(error.message)
+      }
+    }
+
+    async function sendEvent(value) {
+      if (!currentSalon || !currentDevice) {
+        setStatus('Configuration incomplète')
+        showError('Impossible d’envoyer l’événement : salon ou device non chargé.')
+        return
+      }
+
+      hideError()
+      setStatus('Envoi en cours...')
+      setButtonsDisabled(true)
+
+      try {
+        const eventRow = {
+          salon_id: currentSalon.id,
+          device_id: currentDevice.id,
+          event_type: 'emoji_click',
+          event_value: value,
+          payload: {
+            source: 'kiosk',
+            screen: 'home',
+            button: value,
+            salon_code: currentSalonCode,
+            device_code: currentDeviceCode,
+            page_path: window.location.pathname,
+            page_url: window.location.href,
+            user_agent: navigator.userAgent
+          }
+        }
+
+        const { error } = await supabase
+          .from('events')
+          .insert([eventRow])
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        setStatus('Merci pour votre retour')
+
+        if (value === 'happy') {
+          setTimeout(() => {
+            window.location.href = '/avis.html'
+          }, 700)
+          return
+        }
+
+        if (value === 'neutral') {
+          setTimeout(() => {
+            window.location.href = '/feedback-attente.html'
+          }, 700)
+          return
+        }
+
+        if (value === 'sad') {
+          setTimeout(() => {
+            window.location.href = '/feedback-resultat.html'
+          }, 700)
+          return
+        }
+      } catch (error) {
+        setStatus('Erreur lors de l’envoi')
+        showError('Erreur Supabase : ' + error.message)
+      } finally {
+        setButtonsDisabled(false)
+      }
+    }
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const value = button.getAttribute('data-value')
+        sendEvent(value)
+      })
+    })
+
+    boot()
+  </script>
 </body>
 </html>

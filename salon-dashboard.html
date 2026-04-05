@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -185,6 +186,10 @@
       margin-bottom: 18px;
     }
 
+    .full-width {
+      width: 100%;
+    }
+
     .section-title {
       font-size: 18px;
       font-weight: 800;
@@ -272,6 +277,8 @@
       display: flex;
       flex-direction: column;
       gap: 4px;
+      min-width: 0;
+      flex: 1;
     }
 
     .list-item .title {
@@ -282,11 +289,90 @@
     .list-item .subtitle {
       color: #9fb0d1;
       font-size: 12px;
+      line-height: 1.4;
+      word-break: break-word;
     }
 
     .list-item .right {
       font-size: 22px;
       font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .feedback-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .feedback-left {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .feedback-top {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .feedback-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .badge-orange {
+      background: rgba(245, 158, 11, 0.18);
+      color: #fbbf24;
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, 0.18);
+      color: #fca5a5;
+    }
+
+    .badge-gray {
+      background: rgba(148, 163, 184, 0.18);
+      color: #cbd5e1;
+    }
+
+    .feedback-date {
+      color: #9fb0d1;
+      font-size: 12px;
+    }
+
+    .feedback-message {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #ffffff;
+      word-break: break-word;
+    }
+
+    .feedback-meta {
+      margin-top: 8px;
+      color: #9fb0d1;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .empty-box {
+      padding: 18px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: #9fb0d1;
+      font-size: 14px;
     }
 
     .footer-note {
@@ -310,6 +396,7 @@
       .title-wrap h1 { font-size: 32px; }
       .grid-kpi { grid-template-columns: 1fr; }
       .sat-row { grid-template-columns: 56px 1fr 60px; }
+      .feedback-item { flex-direction: column; }
     }
   </style>
 </head>
@@ -431,6 +518,12 @@
         <div class="section-subtitle">Lecture rapide pour le salon</div>
         <div id="summaryList" class="list"></div>
       </div>
+    </div>
+
+    <div class="card full-width">
+      <div class="section-title">Retours clients à traiter</div>
+      <div class="section-subtitle">Messages laissés après clic orange ou rouge</div>
+      <div id="negativeFeedbackList" class="list"></div>
     </div>
 
     <div id="hiddenLogBox" class="hidden-log"></div>
@@ -633,6 +726,52 @@
     function getFilteredReviewHistory() {
       if (currentPeriod === 'all') return [...loadedReviewHistory];
       return loadedReviewHistory.filter(row => isInPeriod(getReviewDate(row), currentPeriod));
+    }
+
+    function getPayloadObject(row) {
+      if (!row || !row.payload) return {};
+
+      if (typeof row.payload === 'object') return row.payload;
+
+      try {
+        return JSON.parse(row.payload);
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function getFeedbackMessage(row) {
+      const payload = getPayloadObject(row);
+      return payload.message || row.event_value || '';
+    }
+
+    function getFeedbackLevel(feedbackRow, allRows) {
+      const feedbackTime = new Date(getEventDate(feedbackRow)).getTime();
+      const sameDevice = allRows
+        .filter(row =>
+          row.device_id === feedbackRow.device_id &&
+          row.event_type === 'emoji_click' &&
+          new Date(getEventDate(row)).getTime() <= feedbackTime
+        )
+        .sort((a, b) => new Date(getEventDate(b)) - new Date(getEventDate(a)));
+
+      const previousClick = sameDevice[0];
+
+      if (!previousClick) {
+        return { label: 'À vérifier', className: 'badge-gray', value: 'unknown' };
+      }
+
+      const eventValue = String(previousClick.event_value || '').toLowerCase();
+
+      if (eventValue === 'neutral') {
+        return { label: 'Orange', className: 'badge-orange', value: 'neutral' };
+      }
+
+      if (eventValue === 'sad') {
+        return { label: 'Rouge', className: 'badge-red', value: 'sad' };
+      }
+
+      return { label: 'À vérifier', className: 'badge-gray', value: 'unknown' };
     }
 
     function renderHeader(salon) {
@@ -842,6 +981,54 @@
       });
     }
 
+    function renderNegativeFeedback(events) {
+      const container = document.getElementById('negativeFeedbackList');
+      container.innerHTML = '';
+
+      const feedbackRows = events
+        .filter(row => row.event_type === 'feedback_submit')
+        .map(row => {
+          const message = getFeedbackMessage(row);
+          const level = getFeedbackLevel(row, events);
+
+          return {
+            ...row,
+            feedbackMessage: message,
+            feedbackLevel: level
+          };
+        })
+        .filter(row => row.feedbackMessage && row.feedbackMessage.trim() !== '')
+        .sort((a, b) => new Date(getEventDate(b)) - new Date(getEventDate(a)));
+
+      if (feedbackRows.length === 0) {
+        container.innerHTML = `
+          <div class="empty-box">
+            Aucun retour négatif textuel sur ${getPeriodLabel(currentPeriod).toLowerCase()}.
+          </div>
+        `;
+        return;
+      }
+
+      feedbackRows.forEach(row => {
+        const item = document.createElement('div');
+        item.className = 'feedback-item';
+        item.innerHTML = `
+          <div class="feedback-left">
+            <div class="feedback-top">
+              <span class="feedback-badge ${row.feedbackLevel.className}">${row.feedbackLevel.label}</span>
+              <span class="feedback-date">${formatDateTime(getEventDate(row))}</span>
+            </div>
+            <div class="feedback-message">${row.feedbackMessage}</div>
+            <div class="feedback-meta">
+              Device : ${safeText(row.device_id)}<br>
+              Event value : ${safeText(row.event_value)}
+            </div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
     function renderCurrentPeriod() {
       if (!loadedSalon) return;
 
@@ -855,6 +1042,7 @@
       renderReviewsChart(filteredReviews, loadedSalon);
       renderActivity(filteredEvents);
       renderSummary(loadedSalon, filteredEvents, filteredReviews, stats);
+      renderNegativeFeedback(filteredEvents);
     }
 
     function setupPeriodButtons() {

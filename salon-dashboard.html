@@ -1,152 +1,421 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>SHORTA — Dashboard Salon</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHORTA — Dashboard Salon Debug</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-body {
-  font-family: Arial;
-  background: #0f172a;
-  color: white;
-  padding: 20px;
-}
-.card {
-  background: #1e293b;
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-}
-h1 {
-  margin-bottom: 20px;
-}
-</style>
-
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #08142b;
+      color: #fff;
+      padding: 24px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 42px;
+    }
+    .subtitle {
+      color: #9fb0d1;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: #1c2942;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .kpi {
+      background: #1c2942;
+      border-radius: 16px;
+      padding: 20px;
+    }
+    .kpi-label {
+      color: #9fb0d1;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .kpi-value {
+      font-size: 34px;
+      font-weight: bold;
+    }
+    .ok { color: #4ade80; }
+    .warn { color: #f59e0b; }
+    .bad { color: #f87171; }
+    .line {
+      margin: 8px 0;
+      color: #dbe7ff;
+    }
+    .mono {
+      font-family: Menlo, Monaco, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 13px;
+      line-height: 1.45;
+      background: #0f1a2d;
+      padding: 14px;
+      border-radius: 12px;
+      overflow-x: auto;
+    }
+    canvas {
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px;
+      max-height: 380px;
+    }
+    .bar-wrap {
+      height: 18px;
+      background: #0f1a2d;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 6px;
+      margin-bottom: 16px;
+    }
+    .bar {
+      height: 100%;
+      border-radius: 999px;
+    }
+    .happy { background: #22c55e; }
+    .neutral { background: #f59e0b; }
+    .sad { background: #ef4444; }
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+      h1 { font-size: 30px; }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Dashboard Salon</h1>
+    <div class="subtitle" id="subtitle">Chargement...</div>
 
-<h1>Dashboard Salon</h1>
+    <div class="grid" id="kpis">
+      <div class="kpi"><div class="kpi-label">Salon trouvé</div><div class="kpi-value">...</div></div>
+      <div class="kpi"><div class="kpi-label">Events</div><div class="kpi-value">...</div></div>
+      <div class="kpi"><div class="kpi-label">Review history</div><div class="kpi-value">...</div></div>
+      <div class="kpi"><div class="kpi-label">Avis Google actuel</div><div class="kpi-value">...</div></div>
+    </div>
 
-<div id="kpis" class="grid"></div>
+    <div class="card">
+      <h2>Satisfaction client</h2>
+      <div class="line">Happy 😀 <span id="happyText">0</span></div>
+      <div class="bar-wrap"><div id="happyBar" class="bar happy" style="width:0%"></div></div>
 
-<div class="card">
-  <h2>Evolution avis Google</h2>
-  <canvas id="chartReviews"></canvas>
-</div>
+      <div class="line">Neutral 😐 <span id="neutralText">0</span></div>
+      <div class="bar-wrap"><div id="neutralBar" class="bar neutral" style="width:0%"></div></div>
 
-<div class="card">
-  <h2>Satisfaction client</h2>
-  <div id="satisfaction"></div>
-</div>
+      <div class="line">Sad 😞 <span id="sadText">0</span></div>
+      <div class="bar-wrap"><div id="sadBar" class="bar sad" style="width:0%"></div></div>
+    </div>
 
-<div class="card">
-  <h2>Activité récente</h2>
-  <div id="activity"></div>
-</div>
+    <div class="card">
+      <h2>Evolution avis Google</h2>
+      <canvas id="reviewsChart"></canvas>
+    </div>
 
-<script>
+    <div class="card">
+      <h2>Activité récente</h2>
+      <div id="activityBox" class="mono">Chargement...</div>
+    </div>
 
-// ✅ TES VRAIES CLÉS (déjà intégrées)
-const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co'
-const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu'
+    <div class="card">
+      <h2>DEBUG — Salon trouvé</h2>
+      <div id="salonBox" class="mono">Chargement...</div>
+    </div>
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    <div class="card">
+      <h2>DEBUG — 5 premières lignes events</h2>
+      <div id="eventsBox" class="mono">Chargement...</div>
+    </div>
 
-// récupérer salon depuis URL
-const params = new URLSearchParams(window.location.search)
-const salon_code = params.get('salon')
+    <div class="card">
+      <h2>DEBUG — 5 premières lignes review_history</h2>
+      <div id="reviewsBox" class="mono">Chargement...</div>
+    </div>
 
-// sécurité
-if (!salon_code) {
-  document.body.innerHTML = "❌ salon manquant dans URL"
-}
+    <div class="card">
+      <h2>DEBUG — Colonnes détectées dans events</h2>
+      <div id="eventKeysBox" class="mono">Chargement...</div>
+    </div>
 
-// LOAD DATA
-async function loadDashboard() {
+    <div class="card">
+      <h2>DEBUG — Colonnes détectées dans review_history</h2>
+      <div id="reviewKeysBox" class="mono">Chargement...</div>
+    </div>
 
-  // EVENTS
-  const { data: events } = await supabase
-    .from('events')
-    .select('*')
-    .eq('salon_code', salon_code)
+    <div class="card">
+      <h2>DEBUG — Messages système</h2>
+      <div id="debugLog" class="mono">Initialisation...</div>
+    </div>
+  </div>
 
-  // REVIEW HISTORY
-  const { data: reviews } = await supabase
-    .from('review_history')
-    .select('*')
-    .eq('salon_code', salon_code)
-    .order('created_at', { ascending: true })
+  <script>
+    const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // KPI CALCUL
-  const totalEvents = events.length
+    const params = new URLSearchParams(window.location.search);
+    const salonCode = params.get('salon');
 
-  const happy = events.filter(e => e.type === 'happy').length
-  const neutral = events.filter(e => e.type === 'neutral').length
-  const sad = events.filter(e => e.type === 'sad').length
-
-  const negativeFeedback = sad
-
-  const lastReview = reviews.length > 0 ? reviews[reviews.length - 1].count : 0
-
-  // KPI DISPLAY
-  document.getElementById('kpis').innerHTML = `
-    <div class="card">Avis Google<br><b>${lastReview}</b></div>
-    <div class="card">Total events<br><b>${totalEvents}</b></div>
-    <div class="card">Feedback négatif<br><b>${negativeFeedback}</b></div>
-    <div class="card">Happy %<br><b>${Math.round((happy/totalEvents)*100)||0}%</b></div>
-  `
-
-  // SATISFACTION
-  document.getElementById('satisfaction').innerHTML = `
-    😀 ${Math.round((happy/totalEvents)*100)||0}% <br>
-    😐 ${Math.round((neutral/totalEvents)*100)||0}% <br>
-    😞 ${Math.round((sad/totalEvents)*100)||0}%
-  `
-
-  // CHART REVIEWS
-  const labels = reviews.map(r => new Date(r.created_at).toLocaleDateString())
-  const data = reviews.map(r => r.count)
-
-  new Chart(document.getElementById('chartReviews'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Avis Google',
-        data,
-        borderWidth: 2
-      }]
+    const debugMessages = [];
+    function log(msg, obj = null) {
+      const line = obj ? `${msg}\n${JSON.stringify(obj, null, 2)}` : msg;
+      debugMessages.push(line);
+      document.getElementById('debugLog').textContent = debugMessages.join('\n\n----------------\n\n');
+      console.log(msg, obj || '');
     }
-  })
 
-  // ACTIVITÉ (par jour)
-  const activityMap = {}
+    function safeString(v) {
+      if (v === null || v === undefined) return '';
+      return String(v).trim();
+    }
 
-  events.forEach(e => {
-    const day = new Date(e.created_at).toLocaleDateString()
-    activityMap[day] = (activityMap[day] || 0) + 1
-  })
+    function normalizeSentiment(eventRow) {
+      const candidates = [
+        eventRow.type,
+        eventRow.event_type,
+        eventRow.sentiment,
+        eventRow.mood,
+        eventRow.choice,
+        eventRow.button,
+        eventRow.status,
+        eventRow.value,
+        eventRow.action
+      ];
 
-  let activityHTML = ""
-  Object.entries(activityMap).slice(-7).forEach(([day, count]) => {
-    activityHTML += `${day} : ${count} events<br>`
-  })
+      for (const raw of candidates) {
+        const v = safeString(raw).toLowerCase();
 
-  document.getElementById('activity').innerHTML = activityHTML
+        if (!v) continue;
 
-}
+        if (
+          v === 'happy' || v === 'positive' || v === 'good' || v === 'avis' ||
+          v === 'green' || v === '😀' || v === 'smile' || v.includes('happy')
+        ) return 'happy';
 
-loadDashboard()
+        if (
+          v === 'neutral' || v === 'orange' || v === '😐' || v.includes('neutral')
+        ) return 'neutral';
 
-</script>
+        if (
+          v === 'sad' || v === 'negative' || v === 'bad' || v === 'feedback' ||
+          v === 'red' || v === '😞' || v === '☹️' || v.includes('sad')
+        ) return 'sad';
+      }
 
+      return 'unknown';
+    }
+
+    function getReviewCount(row) {
+      const candidates = [
+        row.count,
+        row.review_count,
+        row.total_reviews,
+        row.google_reviews,
+        row.value,
+        row.current_count
+      ];
+
+      for (const c of candidates) {
+        if (c !== null && c !== undefined && c !== '') {
+          const n = Number(c);
+          if (!Number.isNaN(n)) return n;
+        }
+      }
+      return 0;
+    }
+
+    function getRowDate(row) {
+      return (
+        row.created_at ||
+        row.date ||
+        row.recorded_at ||
+        row.inserted_at ||
+        row.updated_at ||
+        null
+      );
+    }
+
+    async function loadDashboard() {
+      if (!salonCode) {
+        document.getElementById('subtitle').textContent = 'Erreur : paramètre salon manquant';
+        log('Paramètre ?salon= manquant dans l’URL');
+        return;
+      }
+
+      document.getElementById('subtitle').textContent = `Salon demandé : ${salonCode}`;
+      log('Salon demandé', { salonCode });
+
+      // 1) salon
+      const { data: salonRows, error: salonError } = await supabase
+        .from('salons')
+        .select('*')
+        .eq('salon_code', salonCode);
+
+      if (salonError) {
+        log('Erreur lecture table salons', salonError);
+      } else {
+        log('Résultat salons', salonRows);
+      }
+
+      const salonFound = salonRows && salonRows.length > 0;
+      document.getElementById('salonBox').textContent = JSON.stringify(salonRows || [], null, 2);
+
+      // 2) events
+      const { data: eventRows, error: eventError } = await supabase
+        .from('events')
+        .select('*')
+        .eq('salon_code', salonCode)
+        .order('created_at', { ascending: true });
+
+      if (eventError) {
+        log('Erreur lecture table events', eventError);
+      } else {
+        log('Résultat events count', { count: (eventRows || []).length });
+      }
+
+      document.getElementById('eventsBox').textContent = JSON.stringify((eventRows || []).slice(0, 5), null, 2);
+
+      // 3) review_history
+      const { data: reviewRows, error: reviewError } = await supabase
+        .from('review_history')
+        .select('*')
+        .eq('salon_code', salonCode)
+        .order('created_at', { ascending: true });
+
+      if (reviewError) {
+        log('Erreur lecture table review_history', reviewError);
+      } else {
+        log('Résultat review_history count', { count: (reviewRows || []).length });
+      }
+
+      document.getElementById('reviewsBox').textContent = JSON.stringify((reviewRows || []).slice(0, 5), null, 2);
+
+      // 4) colonnes détectées
+      const eventKeys = eventRows && eventRows.length ? Object.keys(eventRows[0]) : [];
+      const reviewKeys = reviewRows && reviewRows.length ? Object.keys(reviewRows[0]) : [];
+
+      document.getElementById('eventKeysBox').textContent = JSON.stringify(eventKeys, null, 2);
+      document.getElementById('reviewKeysBox').textContent = JSON.stringify(reviewKeys, null, 2);
+
+      // 5) KPI
+      const totalEvents = (eventRows || []).length;
+      const totalReviewsRows = (reviewRows || []).length;
+      const currentGoogleReviews = totalReviewsRows ? getReviewCount(reviewRows[reviewRows.length - 1]) : 0;
+
+      const sentiments = (eventRows || []).map(normalizeSentiment);
+      const happyCount = sentiments.filter(x => x === 'happy').length;
+      const neutralCount = sentiments.filter(x => x === 'neutral').length;
+      const sadCount = sentiments.filter(x => x === 'sad').length;
+
+      const happyPct = totalEvents ? Math.round((happyCount / totalEvents) * 100) : 0;
+      const neutralPct = totalEvents ? Math.round((neutralCount / totalEvents) * 100) : 0;
+      const sadPct = totalEvents ? Math.round((sadCount / totalEvents) * 100) : 0;
+
+      document.getElementById('kpis').innerHTML = `
+        <div class="kpi">
+          <div class="kpi-label">Salon trouvé</div>
+          <div class="kpi-value ${salonFound ? 'ok' : 'bad'}">${salonFound ? 'OUI' : 'NON'}</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Events</div>
+          <div class="kpi-value">${totalEvents}</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Review history</div>
+          <div class="kpi-value">${totalReviewsRows}</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Avis Google actuel</div>
+          <div class="kpi-value">${currentGoogleReviews}</div>
+        </div>
+      `;
+
+      document.getElementById('happyText').textContent = `${happyCount} (${happyPct}%)`;
+      document.getElementById('neutralText').textContent = `${neutralCount} (${neutralPct}%)`;
+      document.getElementById('sadText').textContent = `${sadCount} (${sadPct}%)`;
+
+      document.getElementById('happyBar').style.width = happyPct + '%';
+      document.getElementById('neutralBar').style.width = neutralPct + '%';
+      document.getElementById('sadBar').style.width = sadPct + '%';
+
+      // 6) activité
+      const activityMap = {};
+      (eventRows || []).forEach(row => {
+        const d = getRowDate(row);
+        const key = d ? new Date(d).toLocaleDateString('fr-FR') : 'sans_date';
+        activityMap[key] = (activityMap[key] || 0) + 1;
+      });
+
+      const activityLines = Object.entries(activityMap)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .slice(-10)
+        .map(([date, count]) => `${date} : ${count} event(s)`);
+
+      document.getElementById('activityBox').textContent =
+        activityLines.length ? activityLines.join('\n') : 'Aucune activité trouvée pour ce salon';
+
+      // 7) graphique avis
+      const chartLabels = [];
+      const chartValues = [];
+
+      (reviewRows || []).forEach(row => {
+        const d = getRowDate(row);
+        chartLabels.push(d ? new Date(d).toLocaleDateString('fr-FR') : 'sans_date');
+        chartValues.push(getReviewCount(row));
+      });
+
+      const ctx = document.getElementById('reviewsChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            label: 'Avis Google',
+            data: chartValues,
+            borderWidth: 2,
+            tension: 0.25
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      log('Résumé final', {
+        salonFound,
+        totalEvents,
+        totalReviewsRows,
+        currentGoogleReviews,
+        happyCount,
+        neutralCount,
+        sadCount,
+        detectedEventKeys: eventKeys,
+        detectedReviewKeys: reviewKeys
+      });
+    }
+
+    loadDashboard();
+  </script>
 </body>
 </html>

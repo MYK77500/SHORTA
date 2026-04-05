@@ -11,6 +11,8 @@
 body { background:#0b1a2f; color:white; font-family:Arial; padding:20px; }
 .card { background:#1e2d4a; padding:20px; border-radius:10px; margin-bottom:20px; }
 .grid { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; }
+h1 { margin-bottom:20px; }
+h2 { margin-bottom:10px; }
 </style>
 </head>
 
@@ -21,8 +23,23 @@ body { background:#0b1a2f; color:white; font-family:Arial; padding:20px; }
 <div id="kpis" class="grid"></div>
 
 <div class="card">
-<h2>Satisfaction</h2>
+<h2>Evolution avis Google</h2>
+<canvas id="chart"></canvas>
+</div>
+
+<div class="card">
+<h2>Satisfaction client</h2>
 <div id="satisfaction"></div>
+</div>
+
+<div class="card">
+<h2>Activité récente</h2>
+<div id="activity"></div>
+</div>
+
+<div class="card">
+<h2>Résumé business</h2>
+<div id="summary"></div>
 </div>
 
 <script>
@@ -56,44 +73,75 @@ const { data: reviews } = await supabase
 .eq('salon_id', salon.id)
 .order('captured_at', { ascending: true })
 
-// 🔥 LOGIQUE CORRIGÉE
+// ================= KPI =================
 
 let happy = 0
-let neutral = 0
 let sad = 0
 
 events.forEach(e => {
-
-if(e.event_type === 'emoji_click'){
-
-// ⚠️ ici on suppose que tu as une info quelque part
-// sinon on considère que emoji_click = happy
-
-happy++
-
-}
-
-if(e.event_type === 'feedback_submit'){
-sad++
-}
-
+if(e.event_type === 'emoji_click') happy++
+if(e.event_type === 'feedback_submit') sad++
 })
 
-// KPI
+const total = happy + sad
+
+// ================= AFFICHAGE KPI =================
+
 document.getElementById('kpis').innerHTML = `
 <div class="card">Avis Google<br><b>${reviews.length ? reviews[reviews.length-1].review_count : 0}</b></div>
 <div class="card">Events<br><b>${events.length}</b></div>
-<div class="card">Négatif<br><b>${sad}</b></div>
-<div class="card">Happy<br><b>${happy}</b></div>
+<div class="card">Feedback négatif<br><b>${sad}</b></div>
+<div class="card">Satisfaction<br><b>${total ? Math.round((happy/total)*100) : 0}%</b></div>
 `
 
-// satisfaction
-const total = happy + neutral + sad
+// ================= SATISFACTION =================
 
 document.getElementById('satisfaction').innerHTML = `
-😀 ${Math.round((happy/total)*100)||0}%<br>
-😐 ${Math.round((neutral/total)*100)||0}%<br>
-😞 ${Math.round((sad/total)*100)||0}%
+😀 ${total ? Math.round((happy/total)*100) : 0}%<br>
+😞 ${total ? Math.round((sad/total)*100) : 0}%
+`
+
+// ================= GRAPH =================
+
+const labels = reviews.map(r => new Date(r.captured_at).toLocaleDateString())
+const data = reviews.map(r => r.review_count)
+
+new Chart(document.getElementById('chart'), {
+type: 'line',
+data: {
+labels,
+datasets: [{
+label: 'Avis Google',
+data,
+borderWidth: 2
+}]
+}
+})
+
+// ================= ACTIVITÉ =================
+
+const map = {}
+
+events.forEach(e=>{
+const d = new Date(e.created_at).toLocaleDateString()
+map[d] = (map[d] || 0) + 1
+})
+
+let html = ""
+
+Object.entries(map).slice(-7).forEach(([d,c])=>{
+html += `${d} : ${c} events<br>`
+})
+
+document.getElementById('activity').innerHTML = html
+
+// ================= SUMMARY =================
+
+document.getElementById('summary').innerHTML = `
+Avis actuels : ${reviews.length ? reviews[reviews.length-1].review_count : 0}<br>
+Volume clients : ${events.length}<br>
+Satisfaction : ${total ? Math.round((happy/total)*100) : 0}%<br>
+Risque : ${sad > 0 ? "⚠️ clients insatisfaits" : "RAS"}
 `
 
 }

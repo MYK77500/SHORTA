@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SHORTA — Dashboard Salon Debug Final</title>
+  <title>SHORTA — Dashboard Salon</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -43,6 +43,13 @@
       font-size: 15px;
     }
 
+    .top-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
     .refresh-btn {
       background: #f8fafc;
       color: #07152d;
@@ -53,22 +60,34 @@
       cursor: pointer;
     }
 
+    .period-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .period-btn {
+      background: rgba(255,255,255,0.05);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .period-btn.active {
+      background: #f8fafc;
+      color: #07152d;
+      border-color: #f8fafc;
+    }
+
     .alert-box {
       display: none;
       background: rgba(239,68,68,0.12);
       color: #fecaca;
       border: 1px solid rgba(239,68,68,0.35);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 20px;
-      white-space: pre-wrap;
-    }
-
-    .success-box {
-      display: none;
-      background: rgba(34,197,94,0.12);
-      color: #bbf7d0;
-      border: 1px solid rgba(34,197,94,0.35);
       border-radius: 16px;
       padding: 16px;
       margin-bottom: 20px;
@@ -270,17 +289,15 @@
       font-weight: 800;
     }
 
-    .log-box {
-      font-family: Menlo, Monaco, monospace;
+    .footer-note {
+      text-align: center;
+      color: #9fb0d1;
       font-size: 12px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      word-break: break-word;
-      background: #0d1a30;
-      border-radius: 12px;
-      padding: 14px;
-      min-height: 120px;
-      color: #dbeafe;
+      margin-top: 10px;
+    }
+
+    .hidden-log {
+      display: none;
     }
 
     @media (max-width: 1100px) {
@@ -303,11 +320,20 @@
         <h1>Dashboard Salon</h1>
         <p id="pageSubtitle">Initialisation...</p>
       </div>
-      <button class="refresh-btn" onclick="window.location.reload()">Actualiser</button>
+      <div class="top-actions">
+        <button class="refresh-btn" onclick="window.location.reload()">Actualiser</button>
+      </div>
+    </div>
+
+    <div class="period-bar">
+      <button class="period-btn active" data-period="today">Aujourd’hui</button>
+      <button class="period-btn" data-period="7">7 jours</button>
+      <button class="period-btn" data-period="30">30 jours</button>
+      <button class="period-btn" data-period="90">90 jours</button>
+      <button class="period-btn" data-period="all">Tout</button>
     </div>
 
     <div id="alertBox" class="alert-box"></div>
-    <div id="successBox" class="success-box"></div>
 
     <div class="hero">
       <div class="hero-grid">
@@ -325,8 +351,8 @@
             <div class="value" id="miniCity">-</div>
           </div>
           <div class="mini-card">
-            <div class="label">Statut</div>
-            <div class="value" id="miniStatus">-</div>
+            <div class="label">Période</div>
+            <div class="value" id="miniPeriod">-</div>
           </div>
         </div>
       </div>
@@ -407,10 +433,10 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="section-title">Logs techniques</div>
-      <div class="section-subtitle">Pour voir exactement où ça bloque</div>
-      <div id="logBox" class="log-box">Démarrage...</div>
+    <div id="hiddenLogBox" class="hidden-log"></div>
+
+    <div class="footer-note">
+      SHORTA — Dashboard salon V1
     </div>
   </div>
 
@@ -420,6 +446,10 @@
 
     const logLines = [];
     let reviewsChartInstance = null;
+    let currentPeriod = 'all';
+    let loadedSalon = null;
+    let loadedEvents = [];
+    let loadedReviewHistory = [];
 
     function log(message, data = null) {
       let line = message;
@@ -431,7 +461,10 @@
         }
       }
       logLines.push(line);
-      document.getElementById('logBox').textContent = logLines.join('\n\n----------------\n\n');
+      const logBox = document.getElementById('hiddenLogBox');
+      if (logBox) {
+        logBox.textContent = logLines.join('\n\n----------------\n\n');
+      }
       console.log(message, data || '');
     }
 
@@ -440,13 +473,6 @@
       box.style.display = 'block';
       box.textContent = details ? message + '\n\n' + JSON.stringify(details, null, 2) : message;
       log('ERREUR', { message, details });
-    }
-
-    function showSuccess(message) {
-      const box = document.getElementById('successBox');
-      box.style.display = 'block';
-      box.textContent = message;
-      log('SUCCESS', { message });
     }
 
     function safeText(value, fallback = '-') {
@@ -562,6 +588,53 @@
       };
     }
 
+    function getPeriodLabel(period) {
+      if (period === 'today') return 'Aujourd’hui';
+      if (period === '7') return '7 jours';
+      if (period === '30') return '30 jours';
+      if (period === '90') return '90 jours';
+      return 'Tout';
+    }
+
+    function getPeriodStart(period) {
+      const now = new Date();
+
+      if (period === 'all') return null;
+
+      if (period === 'today') {
+        const start = new Date(now);
+        start.setHours(0, 0, 0, 0);
+        return start;
+      }
+
+      const days = Number(period);
+      const start = new Date(now);
+      start.setDate(start.getDate() - days);
+      return start;
+    }
+
+    function isInPeriod(dateValue, period) {
+      if (period === 'all') return true;
+      if (!dateValue) return false;
+
+      const start = getPeriodStart(period);
+      if (!start) return true;
+
+      const d = new Date(dateValue);
+      if (Number.isNaN(d.getTime())) return false;
+
+      return d >= start;
+    }
+
+    function getFilteredEvents() {
+      return loadedEvents.filter(row => isInPeriod(getEventDate(row), currentPeriod));
+    }
+
+    function getFilteredReviewHistory() {
+      if (currentPeriod === 'all') return [...loadedReviewHistory];
+      return loadedReviewHistory.filter(row => isInPeriod(getReviewDate(row), currentPeriod));
+    }
+
     function renderHeader(salon) {
       document.getElementById('pageSubtitle').textContent = `Salon chargé : ${salon.salon_code}`;
       document.getElementById('salonName').textContent = safeText(salon.name, 'Salon sans nom');
@@ -570,45 +643,45 @@
 
       document.getElementById('miniSalonCode').textContent = safeText(salon.salon_code, '-');
       document.getElementById('miniCity').textContent = safeText(salon.city, '-');
-      document.getElementById('miniStatus').textContent = salon.is_active ? 'ACTIF' : 'OFF';
+      document.getElementById('miniPeriod').textContent = getPeriodLabel(currentPeriod);
     }
 
     function renderKpis(salon, events, reviewHistory, stats) {
       const currentReviewCount =
-        reviewHistory.length > 0
-          ? getReviewCount(reviewHistory[reviewHistory.length - 1])
+        loadedReviewHistory.length > 0
+          ? getReviewCount(loadedReviewHistory[loadedReviewHistory.length - 1])
           : Number(salon.google_review_count || 0);
 
       let reviewDelta = 0;
       if (reviewHistory.length >= 2) {
         reviewDelta =
           getReviewCount(reviewHistory[reviewHistory.length - 1]) -
-          getReviewCount(reviewHistory[reviewHistory.length - 2]);
+          getReviewCount(reviewHistory[0]);
       }
 
       document.getElementById('kpiReviews').textContent = currentReviewCount;
       document.getElementById('kpiReviewsSub').textContent =
-        reviewHistory.length > 0
-          ? `Mis à jour le ${formatDateTime(getReviewDate(reviewHistory[reviewHistory.length - 1]))}`
+        loadedReviewHistory.length > 0
+          ? `Mis à jour le ${formatDateTime(getReviewDate(loadedReviewHistory[loadedReviewHistory.length - 1]))}`
           : 'Aucune ligne review_history trouvée';
 
       document.getElementById('kpiReviewDelta').textContent = reviewDelta >= 0 ? `+${reviewDelta}` : String(reviewDelta);
       document.getElementById('kpiReviewDeltaSub').textContent =
         reviewHistory.length >= 2
-          ? 'Comparaison avec le point précédent'
-          : 'Pas assez d’historique pour comparer';
+          ? `Évolution sur ${getPeriodLabel(currentPeriod).toLowerCase()}`
+          : `Pas assez d’historique sur ${getPeriodLabel(currentPeriod).toLowerCase()}`;
 
       document.getElementById('kpiEvents').textContent = events.length;
       document.getElementById('kpiEventsSub').textContent =
         events.length > 0
-          ? `Dernier event : ${formatDateTime(getEventDate(events[events.length - 1]))}`
-          : 'Aucun event trouvé';
+          ? `Events sur ${getPeriodLabel(currentPeriod).toLowerCase()}`
+          : `Aucun event sur ${getPeriodLabel(currentPeriod).toLowerCase()}`;
 
       document.getElementById('kpiNegative').textContent = stats.sad;
       document.getElementById('kpiNegativeSub').textContent =
         stats.sad > 0
-          ? 'Des retours insatisfaits existent'
-          : 'Aucun retour négatif détecté';
+          ? `Des retours insatisfaits existent sur ${getPeriodLabel(currentPeriod).toLowerCase()}`
+          : `Aucun retour négatif sur ${getPeriodLabel(currentPeriod).toLowerCase()}`;
     }
 
     function renderSatisfaction(stats) {
@@ -630,6 +703,9 @@
           labels.push(formatDate(getReviewDate(row)));
           values.push(getReviewCount(row));
         });
+      } else if (loadedReviewHistory.length > 0) {
+        labels.push(formatDate(getReviewDate(loadedReviewHistory[loadedReviewHistory.length - 1])));
+        values.push(getReviewCount(loadedReviewHistory[loadedReviewHistory.length - 1]));
       } else if (salon.google_review_count !== null && salon.google_review_count !== undefined) {
         labels.push('Valeur actuelle');
         values.push(Number(salon.google_review_count) || 0);
@@ -697,7 +773,7 @@
           <div class="list-item">
             <div class="left">
               <div class="title">Aucune activité</div>
-              <div class="subtitle">Aucun event enregistré pour ce salon</div>
+              <div class="subtitle">Aucun event enregistré sur ${getPeriodLabel(currentPeriod).toLowerCase()}</div>
             </div>
             <div class="right">0</div>
           </div>
@@ -724,8 +800,8 @@
       container.innerHTML = '';
 
       const currentReviews =
-        reviewHistory.length > 0
-          ? getReviewCount(reviewHistory[reviewHistory.length - 1])
+        loadedReviewHistory.length > 0
+          ? getReviewCount(loadedReviewHistory[loadedReviewHistory.length - 1])
           : Number(salon.google_review_count || 0);
 
       const items = [
@@ -739,7 +815,7 @@
         {
           title: 'Satisfaction globale',
           subtitle: stats.total > 0
-            ? `${stats.happyPct}% des interactions sont positives`
+            ? `${stats.happyPct}% des interactions sont positives sur ${getPeriodLabel(currentPeriod).toLowerCase()}`
             : 'Pas encore assez de données exploitables',
           value: stats.happyPct + '%'
         },
@@ -763,6 +839,34 @@
           <div class="right">${itemData.value}</div>
         `;
         container.appendChild(item);
+      });
+    }
+
+    function renderCurrentPeriod() {
+      if (!loadedSalon) return;
+
+      const filteredEvents = getFilteredEvents();
+      const filteredReviews = getFilteredReviewHistory();
+      const stats = computeStats(filteredEvents);
+
+      renderHeader(loadedSalon);
+      renderKpis(loadedSalon, filteredEvents, filteredReviews, stats);
+      renderSatisfaction(stats);
+      renderReviewsChart(filteredReviews, loadedSalon);
+      renderActivity(filteredEvents);
+      renderSummary(loadedSalon, filteredEvents, filteredReviews, stats);
+    }
+
+    function setupPeriodButtons() {
+      const buttons = document.querySelectorAll('.period-btn');
+
+      buttons.forEach(button => {
+        button.addEventListener('click', function () {
+          buttons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          currentPeriod = this.dataset.period;
+          renderCurrentPeriod();
+        });
       });
     }
 
@@ -801,15 +905,15 @@
           throw new Error('Aucun salon trouvé pour ce salon_code.');
         }
 
-        const salon = salonResponse.data[0];
-        renderHeader(salon);
-        log('5. Salon trouvé', salon);
+        loadedSalon = salonResponse.data[0];
+        renderHeader(loadedSalon);
+        log('5. Salon trouvé', loadedSalon);
 
         document.getElementById('pageSubtitle').textContent = 'Lecture table events...';
         const eventsResponse = await supabase
           .from('events')
           .select('*')
-          .eq('salon_id', salon.id)
+          .eq('salon_id', loadedSalon.id)
           .order('created_at', { ascending: true });
 
         log('6. Réponse events', {
@@ -821,13 +925,13 @@
           throw eventsResponse.error;
         }
 
-        const events = eventsResponse.data || [];
+        loadedEvents = eventsResponse.data || [];
 
         document.getElementById('pageSubtitle').textContent = 'Lecture review_history...';
         const reviewResponse = await supabase
           .from('review_history')
           .select('*')
-          .eq('salon_id', salon.id)
+          .eq('salon_id', loadedSalon.id)
           .order('captured_at', { ascending: true });
 
         log('7. Réponse review_history', {
@@ -839,28 +943,14 @@
           throw reviewResponse.error;
         }
 
-        const reviewHistory = reviewResponse.data || [];
-        const stats = computeStats(events);
+        loadedReviewHistory = reviewResponse.data || [];
+        log('8. Données chargées', {
+          events: loadedEvents.length,
+          reviewHistory: loadedReviewHistory.length
+        });
 
-        log('8. Stats calculées', stats);
-
-        renderKpis(salon, events, reviewHistory, stats);
-        log('9. KPI affichés');
-
-        renderSatisfaction(stats);
-        log('10. Satisfaction affichée');
-
-        renderReviewsChart(reviewHistory, salon);
-        log('11. Graphique affiché');
-
-        renderActivity(events);
-        log('12. Activité affichée');
-
-        renderSummary(salon, events, reviewHistory, stats);
-        log('13. Résumé affiché');
-
-        document.getElementById('pageSubtitle').textContent = `Salon chargé : ${salon.salon_code}`;
-        showSuccess('Dashboard chargé avec succès.');
+        renderCurrentPeriod();
+        document.getElementById('pageSubtitle').textContent = `Salon chargé : ${loadedSalon.salon_code}`;
       } catch (error) {
         showError('Le dashboard a rencontré une erreur.', {
           message: error.message || String(error),
@@ -888,6 +978,7 @@
       });
     });
 
+    setupPeriodButtons();
     loadDashboard();
   </script>
 </body>

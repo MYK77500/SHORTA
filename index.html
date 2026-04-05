@@ -266,11 +266,11 @@
 
     function getRedirectUrl(value) {
       if (value === 'happy') {
-        return '/avis.html'
+        return '/avis.html?salon_code=' + encodeURIComponent(currentSalonCode) + '&device_code=' + encodeURIComponent(currentDeviceCode)
       }
 
       if (value === 'neutral' || value === 'sad') {
-        return '/feedback.html'
+        return '/feedback.html?salon_code=' + encodeURIComponent(currentSalonCode) + '&device_code=' + encodeURIComponent(currentDeviceCode)
       }
 
       return null

@@ -106,6 +106,11 @@
       color: #111111;
     }
 
+    .btn-dashboard {
+      background: #22c55e;
+      color: #ffffff;
+    }
+
     .login-status {
       min-height: 22px;
       font-size: 14px;
@@ -860,6 +865,11 @@
       return 'https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=' + encodeURIComponent(targetUrl)
     }
 
+    function openDashboard(salonCode) {
+      const url = APP_BASE_URL + '/salon-dashboard.html?salon=' + encodeURIComponent(salonCode)
+      window.open(url, '_blank')
+    }
+
     function updateKpis(salons) {
       const salonsCount = salons.length
       const activeSalonsCount = salons.filter(s => s.is_active).length
@@ -954,6 +964,9 @@
             </div>
 
             <div class="salon-actions">
+              <button class="action-btn btn-dashboard" data-open-dashboard="${safeText(salon.salon_code)}">
+                Voir dashboard
+              </button>
               <button class="action-btn btn-primary" data-action="toggle-details" data-salon-id="${salon.salon_id}">
                 Voir détails
               </button>
@@ -1098,7 +1111,7 @@
           eventsContainer.innerHTML = events.map((event) => {
             return `
               <div class="event-item">
-                <strong>${safeText(event.event_type)}</strong> — ${safeText(event.event_value)}<br />
+                <strong>${safeText(event.event_type)}</strong> — ${safeText(event.event_value)}</br>
                 Device : ${safeText(deviceMap[event.device_id] || '—')}<br />
                 Date : ${formatDate(event.created_at)}
               </div>
@@ -1157,6 +1170,16 @@
           button.textContent = 'Masquer détails'
 
           await loadSalonDetails(salon.salon_id, salon.salon_code)
+        }
+      })
+
+      const dashboardButtons = document.querySelectorAll('[data-open-dashboard]')
+
+      dashboardButtons.forEach((button) => {
+        button.onclick = () => {
+          const salonCode = button.getAttribute('data-open-dashboard')
+          if (!salonCode) return
+          openDashboard(salonCode)
         }
       })
     }

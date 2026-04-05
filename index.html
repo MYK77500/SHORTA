@@ -46,7 +46,7 @@
       justify-content: center;
       gap: 28px;
       flex-wrap: wrap;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .emoji-btn {
@@ -86,8 +86,8 @@
     }
 
     #status {
-      min-height: 28px;
-      font-size: 18px;
+      min-height: 24px;
+      font-size: 16px;
       font-weight: 600;
       color: #222222;
       margin-top: 8px;
@@ -142,7 +142,7 @@
       <button class="emoji-btn sad" data-value="sad">😞</button>
     </div>
 
-    <div id="status">Chargement...</div>
+    <div id="status"></div>
 
     <div id="errorBox" class="error-box"></div>
   </div>
@@ -244,7 +244,7 @@
     async function boot() {
       try {
         hideError()
-        setStatus('Chargement...')
+        setStatus('')
 
         const { salonCode, deviceCode } = parseKioskUrl()
         currentSalonCode = salonCode
@@ -262,6 +262,18 @@
         setStatus('Erreur')
         showError(error.message)
       }
+    }
+
+    function getRedirectUrl(value) {
+      if (value === 'happy') {
+        return '/avis.html'
+      }
+
+      if (value === 'neutral' || value === 'sad') {
+        return '/feedback.html'
+      }
+
+      return null
     }
 
     async function sendEvent(value) {
@@ -301,11 +313,18 @@
           throw new Error(error.message)
         }
 
-        setStatus('Merci pour votre retour')
+        const redirectUrl = getRedirectUrl(value)
+
+        if (redirectUrl) {
+          window.location.href = redirectUrl
+          return
+        }
+
+        setStatus('')
+        setButtonsDisabled(false)
       } catch (error) {
         setStatus('Erreur')
         showError('Erreur Supabase : ' + error.message)
-      } finally {
         setButtonsDisabled(false)
       }
     }

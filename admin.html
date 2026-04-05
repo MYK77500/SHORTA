@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SHORTA Admin V2</title>
+  <title>SHORTA Admin V3</title>
 
   <style>
     * {
@@ -112,6 +113,22 @@
       color: #ffffff;
     }
 
+    .btn-edit {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    .btn-danger-soft {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .btn-small {
+      padding: 9px 12px;
+      font-size: 13px;
+      border-radius: 10px;
+    }
+
     .login-status {
       min-height: 22px;
       font-size: 14px;
@@ -121,7 +138,7 @@
     }
 
     .page {
-      max-width: 1450px;
+      max-width: 1540px;
       margin: 0 auto;
       padding: 24px;
     }
@@ -159,23 +176,6 @@
       cursor: pointer;
     }
 
-    .search-input {
-      width: 320px;
-      max-width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 15px;
-      background: #ffffff;
-    }
-
-    .grid-top {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 20px;
-      margin-bottom: 24px;
-    }
-
     .panel {
       background: #ffffff;
       border: 1px solid #e5e7eb;
@@ -187,7 +187,7 @@
     .panel-title {
       font-size: 20px;
       font-weight: 800;
-      margin: 0 0 16px 0;
+      margin: 0 0 12px 0;
     }
 
     .panel-subtitle {
@@ -195,6 +195,40 @@
       color: #6b7280;
       margin: 0 0 18px 0;
       line-height: 1.5;
+    }
+
+    .grid-top {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .summary-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .summary-label {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .summary-value {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
     }
 
     .form-grid {
@@ -279,33 +313,6 @@
       display: block;
     }
 
-    .kpis {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .kpi-card {
-      background: #ffffff;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-    }
-
-    .kpi-label {
-      font-size: 14px;
-      color: #6b7280;
-      margin-bottom: 10px;
-    }
-
-    .kpi-value {
-      font-size: 30px;
-      font-weight: 800;
-      line-height: 1;
-    }
-
     .status-bar {
       min-height: 22px;
       font-size: 14px;
@@ -326,48 +333,57 @@
       font-size: 14px;
     }
 
-    .salons-list {
+    .toolbar {
       display: grid;
-      gap: 16px;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
-    .salon-card {
+    .table-wrap {
+      overflow-x: auto;
       border: 1px solid #ececec;
-      border-radius: 18px;
-      padding: 18px;
+      border-radius: 16px;
       background: #ffffff;
     }
 
-    .salon-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 18px;
-      flex-wrap: wrap;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1200px;
     }
 
-    .salon-main {
-      flex: 1 1 420px;
-      min-width: 280px;
-    }
-
-    .salon-name {
-      font-size: 22px;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .salon-meta {
-      font-size: 14px;
+    thead th {
+      text-align: left;
+      font-size: 12px;
       color: #6b7280;
-      line-height: 1.6;
+      padding: 14px 14px;
+      background: #fafafa;
+      border-bottom: 1px solid #ececec;
+      white-space: nowrap;
     }
 
-    .badges {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
+    tbody td {
+      padding: 14px 14px;
+      border-bottom: 1px solid #f0f0f0;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    tbody tr:hover {
+      background: #fafcff;
+    }
+
+    .row-main {
+      font-weight: 800;
+      color: #111111;
+      margin-bottom: 4px;
+    }
+
+    .row-sub {
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.4;
     }
 
     .badge {
@@ -376,8 +392,9 @@
       justify-content: center;
       border-radius: 999px;
       padding: 7px 12px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .badge-trial {
@@ -400,54 +417,29 @@
       color: #374151;
     }
 
-    .salon-stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(120px, 1fr));
-      gap: 12px;
-      width: 100%;
-      max-width: 560px;
+    .badge-status-on {
+      background: #ecfdf5;
+      color: #166534;
     }
 
-    .mini-stat {
-      background: #f9fafb;
-      border: 1px solid #eceff3;
-      border-radius: 14px;
-      padding: 12px;
-      text-align: center;
+    .badge-status-off {
+      background: #fef2f2;
+      color: #991b1b;
     }
 
-    .mini-stat-label {
-      font-size: 12px;
-      color: #6b7280;
-      margin-bottom: 6px;
-    }
-
-    .mini-stat-value {
-      font-size: 22px;
-      font-weight: 800;
-    }
-
-    .salon-actions {
-      margin-top: 16px;
+    .row-actions {
       display: flex;
+      gap: 8px;
       flex-wrap: wrap;
-      gap: 10px;
     }
 
-    .action-btn {
-      border: none;
-      border-radius: 12px;
-      padding: 11px 16px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
+    .details-row td {
+      background: #fafafa;
+      padding: 0;
     }
 
-    .details {
-      display: none;
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid #ececec;
+    .details-inner {
+      padding: 18px;
     }
 
     .details-grid {
@@ -457,7 +449,7 @@
     }
 
     .detail-box {
-      background: #fafafa;
+      background: #ffffff;
       border: 1px solid #ececec;
       border-radius: 16px;
       padding: 16px;
@@ -533,13 +525,70 @@
       display: block;
     }
 
-    @media (max-width: 1150px) {
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 999;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 22px;
+      border: 1px solid #e5e7eb;
+      padding: 22px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+    }
+
+    .modal-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .close-btn {
+      border: none;
+      background: #f3f4f6;
+      color: #111111;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .edit-status {
+      min-height: 22px;
+      font-size: 14px;
+      margin-top: 12px;
+      color: #374151;
+    }
+
+    @media (max-width: 1200px) {
       .grid-top {
         grid-template-columns: 1fr;
       }
 
-      .kpis {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      .summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr 1fr;
       }
 
       .details-grid {
@@ -552,13 +601,12 @@
         grid-template-columns: 1fr;
       }
 
-      .kpis {
-        grid-template-columns: 1fr;
+      .summary-grid {
+        grid-template-columns: 1fr 1fr;
       }
 
-      .salon-stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        max-width: none;
+      .toolbar {
+        grid-template-columns: 1fr;
       }
 
       .brand {
@@ -590,15 +638,9 @@
   <div id="adminApp" class="hidden">
     <div class="page">
       <div class="topbar">
-        <div class="brand">SHORTA Admin V2</div>
+        <div class="brand">SHORTA Admin V3</div>
 
         <div class="topbar-right">
-          <input
-            id="searchInput"
-            class="search-input"
-            type="text"
-            placeholder="Rechercher un salon, une ville, un code..."
-          />
           <button id="refreshBtn" class="refresh-btn">Rafraîchir</button>
           <button id="logoutBtn" class="btn btn-secondary">Déconnexion</button>
         </div>
@@ -608,7 +650,7 @@
         <div class="panel">
           <h2 class="panel-title">Créer un client salon</h2>
           <p class="panel-subtitle">
-            Remplis la fiche client. SHORTA génère automatiquement le code salon, le slug, les devices selon le nombre de tablettes, le lien borne et le QR code.
+            Création multi-clients avec raison sociale, nom commercial, plan, statut et nombre de tablettes.
           </p>
 
           <div class="form-grid">
@@ -618,7 +660,7 @@
             </div>
 
             <div>
-              <label class="field-label" for="commercialNameInput">Nom commercial du salon</label>
+              <label class="field-label" for="commercialNameInput">Nom commercial</label>
               <input id="commercialNameInput" class="text-input" type="text" placeholder="Ex : Franck Provost Chelles" />
             </div>
 
@@ -710,43 +752,202 @@
         </div>
 
         <div class="panel">
-          <h2 class="panel-title">Vue rapide</h2>
+          <h2 class="panel-title">Vue globale</h2>
           <p class="panel-subtitle">
-            Cette version permet de piloter un parc multi-clients, avec création de plusieurs tablettes par salon, gestion du plan et ouverture directe du dashboard client.
+            Vision synthétique de ton parc clients pour piloter un grand volume sans te faire submerger.
           </p>
 
-          <div class="kpis" style="margin-bottom:0;">
-            <div class="kpi-card">
-              <div class="kpi-label">Salons</div>
-              <div id="kpiSalons" class="kpi-value">0</div>
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-label">Salons</div>
+              <div id="kpiSalons" class="summary-value">0</div>
             </div>
 
-            <div class="kpi-card">
-              <div class="kpi-label">Salons actifs</div>
-              <div id="kpiActiveSalons" class="kpi-value">0</div>
+            <div class="summary-card">
+              <div class="summary-label">Abonnements actifs</div>
+              <div id="kpiActiveSubs" class="summary-value">0</div>
             </div>
 
-            <div class="kpi-card">
-              <div class="kpi-label">Devices</div>
-              <div id="kpiDevices" class="kpi-value">0</div>
+            <div class="summary-card">
+              <div class="summary-label">Abonnements trial</div>
+              <div id="kpiTrialSubs" class="summary-value">0</div>
             </div>
 
-            <div class="kpi-card">
-              <div class="kpi-label">Events</div>
-              <div id="kpiEvents" class="kpi-value">0</div>
+            <div class="summary-card">
+              <div class="summary-label">Abonnements suspendus</div>
+              <div id="kpiSuspendedSubs" class="summary-value">0</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-label">Devices</div>
+              <div id="kpiDevices" class="summary-value">0</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-label">Events</div>
+              <div id="kpiEvents" class="summary-value">0</div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="panel">
-        <h1 class="panel-title">Liste des clients salons</h1>
+        <h1 class="panel-title">Listing clients salons</h1>
+
+        <div class="toolbar">
+          <input
+            id="searchInput"
+            class="text-input"
+            type="text"
+            placeholder="Rechercher société, nom commercial, ville, code, email..."
+          />
+
+          <select id="subscriptionFilter" class="select-input">
+            <option value="all">Tous abonnements</option>
+            <option value="active">active</option>
+            <option value="trial">trial</option>
+            <option value="suspended">suspended</option>
+          </select>
+
+          <select id="activityFilter" class="select-input">
+            <option value="all">Actif + inactif</option>
+            <option value="active">Actifs seulement</option>
+            <option value="inactive">Inactifs seulement</option>
+          </select>
+
+          <select id="sortInput" class="select-input">
+            <option value="created_desc">Date création ↓</option>
+            <option value="created_asc">Date création ↑</option>
+            <option value="name_asc">Nom commercial A→Z</option>
+            <option value="name_desc">Nom commercial Z→A</option>
+            <option value="city_asc">Ville A→Z</option>
+            <option value="subscription_asc">Abonnement</option>
+            <option value="devices_desc">Devices ↓</option>
+            <option value="events_desc">Events ↓</option>
+          </select>
+        </div>
 
         <div id="status" class="status-bar"></div>
         <div id="errorBox" class="error-box"></div>
 
-        <div id="salonsList" class="salons-list"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Ville</th>
+                <th>Abonnement</th>
+                <th>Statut</th>
+                <th>Devices</th>
+                <th>Events</th>
+                <th>Avis Google</th>
+                <th>Créé le</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="salonsTableBody"></tbody>
+          </table>
+        </div>
+
+        <div id="emptyState" class="empty-state hidden">Aucun salon trouvé.</div>
       </div>
+    </div>
+  </div>
+
+  <div id="editModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-topbar">
+        <div class="modal-title">Modifier le client salon</div>
+        <button id="closeEditModalBtn" class="close-btn">Fermer</button>
+      </div>
+
+      <div class="form-grid">
+        <input type="hidden" id="editSalonId" />
+
+        <div>
+          <label class="field-label" for="editCompanyNameInput">Raison sociale</label>
+          <input id="editCompanyNameInput" class="text-input" type="text" />
+        </div>
+
+        <div>
+          <label class="field-label" for="editCommercialNameInput">Nom commercial</label>
+          <input id="editCommercialNameInput" class="text-input" type="text" />
+        </div>
+
+        <div>
+          <label class="field-label" for="editCityInput">Ville</label>
+          <input id="editCityInput" class="text-input" type="text" />
+        </div>
+
+        <div>
+          <label class="field-label" for="editIsActiveInput">Salon actif</label>
+          <select id="editIsActiveInput" class="select-input">
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="field-label" for="editAddressInput">Adresse</label>
+          <input id="editAddressInput" class="text-input" type="text" />
+        </div>
+
+        <div>
+          <label class="field-label" for="editPhoneInput">Téléphone</label>
+          <input id="editPhoneInput" class="text-input" type="text" />
+        </div>
+
+        <div>
+          <label class="field-label" for="editEmailInput">Email</label>
+          <input id="editEmailInput" class="text-input" type="email" />
+        </div>
+
+        <div>
+          <label class="field-label" for="editSubscriptionInput">Statut abonnement</label>
+          <select id="editSubscriptionInput" class="select-input">
+            <option value="trial">trial</option>
+            <option value="active">active</option>
+            <option value="suspended">suspended</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="field-label" for="editPlanInput">Plan abonnement</label>
+          <select id="editPlanInput" class="select-input">
+            <option value="starter">starter</option>
+            <option value="standard">standard</option>
+            <option value="premium">premium</option>
+            <option value="sur-mesure">sur-mesure</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="field-label" for="editGoogleBusinessInput">Nom Google Business</label>
+          <input id="editGoogleBusinessInput" class="text-input" type="text" />
+        </div>
+
+        <div class="field-full">
+          <label class="field-label" for="editGoogleMapsInput">Lien Google Maps</label>
+          <input id="editGoogleMapsInput" class="text-input" type="text" />
+        </div>
+
+        <div class="field-full">
+          <label class="field-label" for="editGoogleReviewInput">Lien Google avis</label>
+          <input id="editGoogleReviewInput" class="text-input" type="text" />
+        </div>
+
+        <div class="field-full">
+          <label class="field-label" for="editNotesInput">Notes</label>
+          <input id="editNotesInput" class="text-input" type="text" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button id="saveEditBtn" class="btn btn-primary">Enregistrer les modifications</button>
+        <button id="cancelEditBtn" class="btn btn-secondary">Annuler</button>
+      </div>
+
+      <div id="editStatus" class="edit-status"></div>
     </div>
   </div>
 
@@ -771,12 +972,19 @@
 
     const statusEl = document.getElementById('status')
     const errorBoxEl = document.getElementById('errorBox')
-    const salonsListEl = document.getElementById('salonsList')
+    const salonsTableBodyEl = document.getElementById('salonsTableBody')
+    const emptyStateEl = document.getElementById('emptyState')
+
     const searchInputEl = document.getElementById('searchInput')
+    const subscriptionFilterEl = document.getElementById('subscriptionFilter')
+    const activityFilterEl = document.getElementById('activityFilter')
+    const sortInputEl = document.getElementById('sortInput')
     const refreshBtnEl = document.getElementById('refreshBtn')
 
     const kpiSalonsEl = document.getElementById('kpiSalons')
-    const kpiActiveSalonsEl = document.getElementById('kpiActiveSalons')
+    const kpiActiveSubsEl = document.getElementById('kpiActiveSubs')
+    const kpiTrialSubsEl = document.getElementById('kpiTrialSubs')
+    const kpiSuspendedSubsEl = document.getElementById('kpiSuspendedSubs')
     const kpiDevicesEl = document.getElementById('kpiDevices')
     const kpiEventsEl = document.getElementById('kpiEvents')
 
@@ -802,6 +1010,27 @@
     const copyCreatedLinkBtnEl = document.getElementById('copyCreatedLinkBtn')
     const createResultQrEl = document.getElementById('createResultQr')
 
+    const editModalEl = document.getElementById('editModal')
+    const closeEditModalBtnEl = document.getElementById('closeEditModalBtn')
+    const cancelEditBtnEl = document.getElementById('cancelEditBtn')
+    const saveEditBtnEl = document.getElementById('saveEditBtn')
+    const editStatusEl = document.getElementById('editStatus')
+
+    const editSalonIdEl = document.getElementById('editSalonId')
+    const editCompanyNameInputEl = document.getElementById('editCompanyNameInput')
+    const editCommercialNameInputEl = document.getElementById('editCommercialNameInput')
+    const editCityInputEl = document.getElementById('editCityInput')
+    const editIsActiveInputEl = document.getElementById('editIsActiveInput')
+    const editAddressInputEl = document.getElementById('editAddressInput')
+    const editPhoneInputEl = document.getElementById('editPhoneInput')
+    const editEmailInputEl = document.getElementById('editEmailInput')
+    const editSubscriptionInputEl = document.getElementById('editSubscriptionInput')
+    const editPlanInputEl = document.getElementById('editPlanInput')
+    const editGoogleBusinessInputEl = document.getElementById('editGoogleBusinessInput')
+    const editGoogleMapsInputEl = document.getElementById('editGoogleMapsInput')
+    const editGoogleReviewInputEl = document.getElementById('editGoogleReviewInput')
+    const editNotesInputEl = document.getElementById('editNotesInput')
+
     let allSalons = []
 
     function setStatus(message) {
@@ -821,6 +1050,10 @@
 
     function setCreateStatus(message) {
       createStatusEl.textContent = message
+    }
+
+    function setEditStatus(message) {
+      editStatusEl.textContent = message
     }
 
     function hideCreateResult() {
@@ -911,45 +1144,111 @@
       window.open(url, '_blank')
     }
 
-    function updateKpis(salons) {
-      const salonsCount = salons.length
-      const activeSalonsCount = salons.filter(s => s.is_active).length
-      const devicesCount = salons.reduce((sum, s) => sum + Number(s.devices_count || 0), 0)
-      const eventsCount = salons.reduce((sum, s) => sum + Number(s.events_count || 0), 0)
+    function updateGlobalKpis(sourceSalons) {
+      const salonsCount = sourceSalons.length
+      const activeSubsCount = sourceSalons.filter(s => String(s.subscription_status || '').toLowerCase() === 'active').length
+      const trialSubsCount = sourceSalons.filter(s => String(s.subscription_status || '').toLowerCase() === 'trial').length
+      const suspendedSubsCount = sourceSalons.filter(s => String(s.subscription_status || '').toLowerCase() === 'suspended').length
+      const devicesCount = sourceSalons.reduce((sum, s) => sum + Number(s.devices_count || 0), 0)
+      const eventsCount = sourceSalons.reduce((sum, s) => sum + Number(s.events_count || 0), 0)
 
       kpiSalonsEl.textContent = salonsCount
-      kpiActiveSalonsEl.textContent = activeSalonsCount
+      kpiActiveSubsEl.textContent = activeSubsCount
+      kpiTrialSubsEl.textContent = trialSubsCount
+      kpiSuspendedSubsEl.textContent = suspendedSubsCount
       kpiDevicesEl.textContent = devicesCount
       kpiEventsEl.textContent = eventsCount
     }
 
-    function getFilteredSalons() {
-      const q = searchInputEl.value.trim().toLowerCase()
+    function compareValues(a, b) {
+      if (a === b) return 0
+      if (a === null || a === undefined) return 1
+      if (b === null || b === undefined) return -1
+      return a > b ? 1 : -1
+    }
 
-      if (!q) return allSalons
+    function getFilteredAndSortedSalons() {
+      const query = searchInputEl.value.trim().toLowerCase()
+      const subscriptionFilter = subscriptionFilterEl.value
+      const activityFilter = activityFilterEl.value
+      const sortValue = sortInputEl.value
 
-      return allSalons.filter((salon) => {
-        const companyName = extractCompanyName(salon.notes)
-        const plan = extractPlan(salon.notes)
+      let rows = [...allSalons]
 
-        const haystack = [
-          salon.name,
-          companyName,
-          plan,
-          salon.city,
-          salon.salon_code,
-          salon.slug,
-          salon.subscription_status,
-          salon.google_business_name,
-          salon.email,
-          salon.phone
-        ]
-          .filter(Boolean)
-          .join(' ')
-          .toLowerCase()
+      if (query) {
+        rows = rows.filter((salon) => {
+          const companyName = extractCompanyName(salon.notes)
+          const plan = extractPlan(salon.notes)
 
-        return haystack.includes(q)
+          const haystack = [
+            salon.name,
+            companyName,
+            plan,
+            salon.city,
+            salon.salon_code,
+            salon.slug,
+            salon.subscription_status,
+            salon.google_business_name,
+            salon.email,
+            salon.phone
+          ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase()
+
+          return haystack.includes(query)
+        })
+      }
+
+      if (subscriptionFilter !== 'all') {
+        rows = rows.filter(salon => String(salon.subscription_status || '').toLowerCase() === subscriptionFilter)
+      }
+
+      if (activityFilter === 'active') {
+        rows = rows.filter(salon => Boolean(salon.is_active) === true)
+      }
+
+      if (activityFilter === 'inactive') {
+        rows = rows.filter(salon => Boolean(salon.is_active) === false)
+      }
+
+      rows.sort((a, b) => {
+        if (sortValue === 'created_desc') {
+          return new Date(b.created_at || 0) - new Date(a.created_at || 0)
+        }
+
+        if (sortValue === 'created_asc') {
+          return new Date(a.created_at || 0) - new Date(b.created_at || 0)
+        }
+
+        if (sortValue === 'name_asc') {
+          return compareValues(String(a.name || '').toLowerCase(), String(b.name || '').toLowerCase())
+        }
+
+        if (sortValue === 'name_desc') {
+          return compareValues(String(b.name || '').toLowerCase(), String(a.name || '').toLowerCase())
+        }
+
+        if (sortValue === 'city_asc') {
+          return compareValues(String(a.city || '').toLowerCase(), String(b.city || '').toLowerCase())
+        }
+
+        if (sortValue === 'subscription_asc') {
+          return compareValues(String(a.subscription_status || '').toLowerCase(), String(b.subscription_status || '').toLowerCase())
+        }
+
+        if (sortValue === 'devices_desc') {
+          return Number(b.devices_count || 0) - Number(a.devices_count || 0)
+        }
+
+        if (sortValue === 'events_desc') {
+          return Number(b.events_count || 0) - Number(a.events_count || 0)
+        }
+
+        return 0
       })
+
+      return rows
     }
 
     function showCreateResult({ salonCode, slug, kioskUrl, commercialName, companyName, city, tabletCount, plan }) {
@@ -967,78 +1266,61 @@
       createResultQrEl.src = buildQrImageUrl(kioskUrl)
     }
 
-    function renderSalons() {
-      const salons = getFilteredSalons()
-      updateKpis(salons)
+    function renderRows() {
+      const salons = getFilteredAndSortedSalons()
+      updateGlobalKpis(allSalons)
+
+      salonsTableBodyEl.innerHTML = ''
 
       if (!salons.length) {
-        salonsListEl.innerHTML = '<div class="empty-state">Aucun salon trouvé.</div>'
+        emptyStateEl.classList.remove('hidden')
         return
       }
 
-      salonsListEl.innerHTML = salons.map((salon) => {
+      emptyStateEl.classList.add('hidden')
+
+      salons.forEach((salon) => {
         const companyName = extractCompanyName(salon.notes)
         const plan = extractPlan(salon.notes)
 
-        return `
-          <div class="salon-card" id="salon-card-${salon.salon_id}">
-            <div class="salon-top">
-              <div class="salon-main">
-                <div class="salon-name">${safeText(salon.name)}</div>
-                <div class="salon-meta">
-                  <strong>Société :</strong> ${safeText(companyName)}<br />
-                  <strong>Code salon :</strong> ${safeText(salon.salon_code)}<br />
-                  <strong>Slug :</strong> ${safeText(salon.slug)}<br />
-                  <strong>Ville :</strong> ${safeText(salon.city)}<br />
-                  <strong>Email :</strong> ${safeText(salon.email)}<br />
-                  <strong>Téléphone :</strong> ${safeText(salon.phone)}<br />
-                  <strong>Plan :</strong> ${safeText(plan)}
-                </div>
-
-                <div class="badges">
-                  <span class="${getSubscriptionBadgeClass(salon.subscription_status)}">
-                    ${safeText(salon.subscription_status)}
-                  </span>
-
-                  <span class="badge ${salon.is_active ? 'badge-active' : 'badge-suspended'}">
-                    ${salon.is_active ? 'Actif' : 'Inactif'}
-                  </span>
-                </div>
-              </div>
-
-              <div class="salon-stats">
-                <div class="mini-stat">
-                  <div class="mini-stat-label">Avis Google</div>
-                  <div class="mini-stat-value">${safeText(salon.latest_review_count ?? salon.google_review_count ?? 0)}</div>
-                </div>
-
-                <div class="mini-stat">
-                  <div class="mini-stat-label">Note</div>
-                  <div class="mini-stat-value">${safeText(salon.latest_review_rating ?? '—')}</div>
-                </div>
-
-                <div class="mini-stat">
-                  <div class="mini-stat-label">Devices</div>
-                  <div class="mini-stat-value">${safeText(salon.devices_count ?? 0)}</div>
-                </div>
-
-                <div class="mini-stat">
-                  <div class="mini-stat-label">Events</div>
-                  <div class="mini-stat-value">${safeText(salon.events_count ?? 0)}</div>
-                </div>
-              </div>
+        const row = document.createElement('tr')
+        row.innerHTML = `
+          <td>
+            <div class="row-main">${safeText(salon.name)}</div>
+            <div class="row-sub">${safeText(companyName)}</div>
+            <div class="row-sub">${safeText(salon.salon_code)}</div>
+          </td>
+          <td>${safeText(salon.city)}</td>
+          <td>
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <span class="${getSubscriptionBadgeClass(salon.subscription_status)}">${safeText(salon.subscription_status)}</span>
+              <span class="row-sub">${safeText(plan)}</span>
             </div>
-
-            <div class="salon-actions">
-              <button class="action-btn btn-dashboard" data-open-dashboard="${safeText(salon.salon_code)}">
-                Voir dashboard
-              </button>
-              <button class="action-btn btn-primary" data-action="toggle-details" data-salon-id="${salon.salon_id}">
-                Voir détails
-              </button>
+          </td>
+          <td>
+            <span class="badge ${salon.is_active ? 'badge-status-on' : 'badge-status-off'}">
+              ${salon.is_active ? 'Actif' : 'Inactif'}
+            </span>
+          </td>
+          <td>${safeText(salon.devices_count ?? 0)}</td>
+          <td>${safeText(salon.events_count ?? 0)}</td>
+          <td>${safeText(salon.latest_review_count ?? salon.google_review_count ?? 0)}</td>
+          <td>${formatDate(salon.created_at)}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-small btn-dashboard" data-open-dashboard="${safeText(salon.salon_code)}">Dashboard</button>
+              <button class="btn btn-small btn-edit" data-edit-salon="${safeText(salon.salon_id)}">Modifier</button>
+              <button class="btn btn-small btn-secondary" data-toggle-details="${safeText(salon.salon_id)}">Détails</button>
             </div>
+          </td>
+        `
 
-            <div class="details" id="details-${salon.salon_id}">
+        const detailsRow = document.createElement('tr')
+        detailsRow.className = 'details-row hidden'
+        detailsRow.id = 'details-row-' + salon.salon_id
+        detailsRow.innerHTML = `
+          <td colspan="9">
+            <div class="details-inner">
               <div class="details-grid">
                 <div class="detail-box">
                   <div class="detail-title">Informations client salon</div>
@@ -1061,7 +1343,7 @@
                     <input class="link-input" readonly value="Chargement du lien borne..." />
                   </div>
 
-                  <div id="kiosk-qr-box-${salon.salon_id}" class="mini-qr" style="display:none;">
+                  <div id="kiosk-qr-box-${salon.salon_id}" class="mini-qr hidden">
                     <img id="kiosk-qr-img-${salon.salon_id}" alt="QR code borne" />
                   </div>
                 </div>
@@ -1077,11 +1359,14 @@
                 <div id="events-${salon.salon_id}" class="muted">Chargement...</div>
               </div>
             </div>
-          </div>
+          </td>
         `
-      }).join('')
 
-      attachCardActions()
+        salonsTableBodyEl.appendChild(row)
+        salonsTableBodyEl.appendChild(detailsRow)
+      })
+
+      attachRowActions()
     }
 
     async function loadDashboard() {
@@ -1099,7 +1384,7 @@
         }
 
         allSalons = data || []
-        renderSalons()
+        renderRows()
         setStatus(allSalons.length + ' salon(s) chargé(s).')
       } catch (error) {
         setStatus('Erreur')
@@ -1142,7 +1427,7 @@
         if (!devices || !devices.length) {
           devicesContainer.innerHTML = '<div class="muted">Aucun device.</div>'
           kioskLinkBox.innerHTML = '<input class="link-input" readonly value="Aucun device configuré" />'
-          kioskQrBox.style.display = 'none'
+          kioskQrBox.classList.add('hidden')
         } else {
           devicesContainer.innerHTML = devices.map((device) => {
             return `
@@ -1160,11 +1445,11 @@
 
           kioskLinkBox.innerHTML = `
             <input class="link-input" readonly value="${kioskUrl}" />
-            <button class="action-btn btn-secondary" data-copy="${kioskUrl}">Copier le lien borne</button>
+            <button class="btn btn-small btn-secondary" data-copy="${kioskUrl}">Copier le lien borne</button>
           `
 
           kioskQrImg.src = buildQrImageUrl(kioskUrl)
-          kioskQrBox.style.display = 'inline-block'
+          kioskQrBox.classList.remove('hidden')
         }
 
         if (!events || !events.length) {
@@ -1214,39 +1499,139 @@
       })
     }
 
-    function attachCardActions() {
-      const toggleButtons = document.querySelectorAll('[data-action="toggle-details"]')
+    function openEditModal(salonId) {
+      const salon = allSalons.find(s => s.salon_id === salonId)
+      if (!salon) return
 
-      toggleButtons.forEach((button) => {
-        button.onclick = async () => {
-          const salonId = button.getAttribute('data-salon-id')
-          const detailsEl = document.getElementById('details-' + salonId)
-          const salon = allSalons.find((s) => s.salon_id === salonId)
+      editSalonIdEl.value = salon.salon_id
+      editCompanyNameInputEl.value = extractCompanyName(salon.notes)
+      editCommercialNameInputEl.value = salon.name || ''
+      editCityInputEl.value = salon.city || ''
+      editIsActiveInputEl.value = String(Boolean(salon.is_active))
+      editAddressInputEl.value = salon.address || ''
+      editPhoneInputEl.value = salon.phone || ''
+      editEmailInputEl.value = salon.email || ''
+      editSubscriptionInputEl.value = salon.subscription_status || 'trial'
+      editPlanInputEl.value = extractPlan(salon.notes) || 'standard'
+      editGoogleBusinessInputEl.value = salon.google_business_name || ''
+      editGoogleMapsInputEl.value = salon.google_maps_url || ''
+      editGoogleReviewInputEl.value = salon.google_review_url || ''
+      editNotesInputEl.value = extractFreeNotes(salon.notes) || ''
 
-          if (!detailsEl || !salon) return
+      setEditStatus('')
+      editModalEl.style.display = 'flex'
+    }
 
-          const isOpen = detailsEl.style.display === 'block'
+    function closeEditModal() {
+      editModalEl.style.display = 'none'
+      setEditStatus('')
+    }
 
-          if (isOpen) {
-            detailsEl.style.display = 'none'
-            button.textContent = 'Voir détails'
-            return
-          }
+    async function saveEditSalon() {
+      try {
+        setEditStatus('Enregistrement en cours...')
 
-          detailsEl.style.display = 'block'
-          button.textContent = 'Masquer détails'
+        const salonId = editSalonIdEl.value
+        const companyName = editCompanyNameInputEl.value.trim()
+        const commercialName = editCommercialNameInputEl.value.trim()
+        const city = editCityInputEl.value.trim()
+        const isActive = editIsActiveInputEl.value === 'true'
+        const address = editAddressInputEl.value.trim()
+        const phone = editPhoneInputEl.value.trim()
+        const email = editEmailInputEl.value.trim()
+        const subscriptionStatus = editSubscriptionInputEl.value
+        const plan = editPlanInputEl.value
+        const googleBusinessName = editGoogleBusinessInputEl.value.trim()
+        const googleMapsUrl = editGoogleMapsInputEl.value.trim()
+        const googleReviewUrl = editGoogleReviewInputEl.value.trim()
+        const notes = editNotesInputEl.value.trim()
 
-          await loadSalonDetails(salon.salon_id, salon.salon_code)
+        if (!salonId || !companyName || !commercialName || !city || !googleReviewUrl) {
+          throw new Error('Raison sociale, nom commercial, ville et lien Google avis sont obligatoires.')
         }
-      })
 
+        const structuredNotes = buildStructuredNotes({
+          companyName,
+          plan,
+          notes
+        })
+
+        const { error } = await supabase
+          .from('salons')
+          .update({
+            name: commercialName,
+            city: city,
+            address: address || null,
+            phone: phone || null,
+            email: email || null,
+            subscription_status: subscriptionStatus,
+            is_active: isActive,
+            google_business_name: googleBusinessName || null,
+            google_maps_url: googleMapsUrl || null,
+            google_review_url: googleReviewUrl || null,
+            notes: structuredNotes || null
+          })
+          .eq('id', salonId)
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        setEditStatus('Modifications enregistrées.')
+        await loadDashboard()
+
+        setTimeout(() => {
+          closeEditModal()
+        }, 600)
+      } catch (error) {
+        setEditStatus('Erreur : ' + error.message)
+      }
+    }
+
+    function attachRowActions() {
       const dashboardButtons = document.querySelectorAll('[data-open-dashboard]')
+      const detailButtons = document.querySelectorAll('[data-toggle-details]')
+      const editButtons = document.querySelectorAll('[data-edit-salon]')
 
       dashboardButtons.forEach((button) => {
         button.onclick = () => {
           const salonCode = button.getAttribute('data-open-dashboard')
           if (!salonCode) return
           openDashboard(salonCode)
+        }
+      })
+
+      detailButtons.forEach((button) => {
+        button.onclick = async () => {
+          const salonId = button.getAttribute('data-toggle-details')
+          const detailsRow = document.getElementById('details-row-' + salonId)
+          const salon = allSalons.find(s => s.salon_id === salonId)
+
+          if (!detailsRow || !salon) return
+
+          const isHidden = detailsRow.classList.contains('hidden')
+
+          document.querySelectorAll('.details-row').forEach((row) => {
+            if (row.id !== 'details-row-' + salonId) {
+              row.classList.add('hidden')
+            }
+          })
+
+          if (!isHidden) {
+            detailsRow.classList.add('hidden')
+            return
+          }
+
+          detailsRow.classList.remove('hidden')
+          await loadSalonDetails(salon.salon_id, salon.salon_code)
+        }
+      })
+
+      editButtons.forEach((button) => {
+        button.onclick = () => {
+          const salonId = button.getAttribute('data-edit-salon')
+          if (!salonId) return
+          openEditModal(salonId)
         }
       })
     }
@@ -1436,7 +1821,10 @@
       }
     }
 
-    searchInputEl.addEventListener('input', renderSalons)
+    searchInputEl.addEventListener('input', renderRows)
+    subscriptionFilterEl.addEventListener('change', renderRows)
+    activityFilterEl.addEventListener('change', renderRows)
+    sortInputEl.addEventListener('change', renderRows)
     refreshBtnEl.addEventListener('click', loadDashboard)
     createSalonBtnEl.addEventListener('click', createSalon)
     clearFormBtnEl.addEventListener('click', clearCreateForm)
@@ -1463,6 +1851,16 @@
       }
     })
     logoutBtnEl.addEventListener('click', lockAdmin)
+
+    closeEditModalBtnEl.addEventListener('click', closeEditModal)
+    cancelEditBtnEl.addEventListener('click', closeEditModal)
+    saveEditBtnEl.addEventListener('click', saveEditSalon)
+
+    editModalEl.addEventListener('click', (event) => {
+      if (event.target === editModalEl) {
+        closeEditModal()
+      }
+    })
 
     bootSecurity()
   </script>

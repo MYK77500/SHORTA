@@ -17,6 +17,103 @@
       color: #111111;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+    }
+
+    .login-brand {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .login-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0 0 10px 0;
+      text-align: center;
+    }
+
+    .login-subtitle {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0 0 22px 0;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    .text-input,
+    .select-input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      background: #ffffff;
+    }
+
+    .login-actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #111111;
+    }
+
+    .login-status {
+      min-height: 22px;
+      font-size: 14px;
+      margin-top: 12px;
+      color: #8a1f1f;
+      text-align: center;
+    }
+
     .page {
       max-width: 1450px;
       margin: 0 auto;
@@ -104,48 +201,11 @@
       grid-column: 1 / -1;
     }
 
-    .field-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: #374151;
-    }
-
-    .text-input,
-    .select-input {
-      width: 100%;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 14px;
-      background: #ffffff;
-    }
-
     .form-actions {
       margin-top: 14px;
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
-    }
-
-    .btn {
-      border: none;
-      border-radius: 12px;
-      padding: 12px 18px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-primary {
-      background: #111111;
-      color: #ffffff;
-    }
-
-    .btn-secondary {
-      background: #f3f4f6;
-      color: #111111;
     }
 
     .create-status {
@@ -502,143 +562,165 @@
   </style>
 </head>
 <body>
-  <div class="page">
-    <div class="topbar">
-      <div class="brand">SHORTA Admin</div>
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <div class="login-brand">SHORTA</div>
+      <h1 class="login-title">Accès admin</h1>
+      <p class="login-subtitle">
+        Entrez le mot de passe admin pour accéder au dashboard SHORTA.
+      </p>
 
-      <div class="topbar-right">
-        <input
-          id="searchInput"
-          class="search-input"
-          type="text"
-          placeholder="Rechercher un salon, une ville, un code..."
-        />
-        <button id="refreshBtn" class="refresh-btn">Rafraîchir</button>
+      <label class="field-label" for="adminPasswordInput">Mot de passe</label>
+      <input id="adminPasswordInput" class="text-input" type="password" placeholder="Mot de passe admin" />
+
+      <div class="login-actions">
+        <button id="loginBtn" class="btn btn-primary">Se connecter</button>
       </div>
+
+      <div id="loginStatus" class="login-status"></div>
     </div>
+  </div>
 
-    <div class="grid-top">
-      <div class="panel">
-        <h2 class="panel-title">Créer un salon</h2>
-        <p class="panel-subtitle">
-          Remplis les informations principales. SHORTA génère automatiquement le code salon, le slug, le device TAB01, le lien borne et le QR code borne.
-        </p>
+  <div id="adminApp" class="hidden">
+    <div class="page">
+      <div class="topbar">
+        <div class="brand">SHORTA Admin</div>
 
-        <div class="form-grid">
-          <div>
-            <label class="field-label" for="nameInput">Nom du salon</label>
-            <input id="nameInput" class="text-input" type="text" placeholder="Ex : Salon Le Raincy" />
+        <div class="topbar-right">
+          <input
+            id="searchInput"
+            class="search-input"
+            type="text"
+            placeholder="Rechercher un salon, une ville, un code..."
+          />
+          <button id="refreshBtn" class="refresh-btn">Rafraîchir</button>
+          <button id="logoutBtn" class="btn btn-secondary">Déconnexion</button>
+        </div>
+      </div>
+
+      <div class="grid-top">
+        <div class="panel">
+          <h2 class="panel-title">Créer un salon</h2>
+          <p class="panel-subtitle">
+            Remplis les informations principales. SHORTA génère automatiquement le code salon, le slug, le device TAB01, le lien borne et le QR code borne.
+          </p>
+
+          <div class="form-grid">
+            <div>
+              <label class="field-label" for="nameInput">Nom du salon</label>
+              <input id="nameInput" class="text-input" type="text" placeholder="Ex : Salon Le Raincy" />
+            </div>
+
+            <div>
+              <label class="field-label" for="cityInput">Ville</label>
+              <input id="cityInput" class="text-input" type="text" placeholder="Ex : Le Raincy" />
+            </div>
+
+            <div>
+              <label class="field-label" for="addressInput">Adresse</label>
+              <input id="addressInput" class="text-input" type="text" placeholder="Ex : 12 avenue ..." />
+            </div>
+
+            <div>
+              <label class="field-label" for="phoneInput">Téléphone</label>
+              <input id="phoneInput" class="text-input" type="text" placeholder="Ex : 01 23 45 67 89" />
+            </div>
+
+            <div>
+              <label class="field-label" for="emailInput">Email</label>
+              <input id="emailInput" class="text-input" type="email" placeholder="Ex : contact@salon.fr" />
+            </div>
+
+            <div>
+              <label class="field-label" for="subscriptionInput">Statut abonnement</label>
+              <select id="subscriptionInput" class="select-input">
+                <option value="trial">trial</option>
+                <option value="active">active</option>
+                <option value="suspended">suspended</option>
+              </select>
+            </div>
+
+            <div class="field-full">
+              <label class="field-label" for="googleBusinessInput">Nom Google Business</label>
+              <input id="googleBusinessInput" class="text-input" type="text" placeholder="Ex : Franck Provost Le Raincy" />
+            </div>
+
+            <div class="field-full">
+              <label class="field-label" for="googleMapsInput">Lien Google Maps</label>
+              <input id="googleMapsInput" class="text-input" type="text" placeholder="Ex : https://maps.google.com/..." />
+            </div>
+
+            <div class="field-full">
+              <label class="field-label" for="googleReviewInput">Lien Google avis</label>
+              <input id="googleReviewInput" class="text-input" type="text" placeholder="Ex : https://g.page/r/.../review" />
+            </div>
+
+            <div class="field-full">
+              <label class="field-label" for="notesInput">Notes</label>
+              <input id="notesInput" class="text-input" type="text" placeholder="Ex : Salon pilote SHORTA" />
+            </div>
           </div>
 
-          <div>
-            <label class="field-label" for="cityInput">Ville</label>
-            <input id="cityInput" class="text-input" type="text" placeholder="Ex : Le Raincy" />
+          <div class="form-actions">
+            <button id="createSalonBtn" class="btn btn-primary">Créer le salon</button>
+            <button id="clearFormBtn" class="btn btn-secondary">Vider le formulaire</button>
           </div>
 
-          <div>
-            <label class="field-label" for="addressInput">Adresse</label>
-            <input id="addressInput" class="text-input" type="text" placeholder="Ex : 12 avenue ..." />
-          </div>
+          <div id="createStatus" class="create-status"></div>
 
-          <div>
-            <label class="field-label" for="phoneInput">Téléphone</label>
-            <input id="phoneInput" class="text-input" type="text" placeholder="Ex : 01 23 45 67 89" />
-          </div>
-
-          <div>
-            <label class="field-label" for="emailInput">Email</label>
-            <input id="emailInput" class="text-input" type="email" placeholder="Ex : contact@salon.fr" />
-          </div>
-
-          <div>
-            <label class="field-label" for="subscriptionInput">Statut abonnement</label>
-            <select id="subscriptionInput" class="select-input">
-              <option value="trial">trial</option>
-              <option value="active">active</option>
-              <option value="suspended">suspended</option>
-            </select>
-          </div>
-
-          <div class="field-full">
-            <label class="field-label" for="googleBusinessInput">Nom Google Business</label>
-            <input id="googleBusinessInput" class="text-input" type="text" placeholder="Ex : Franck Provost Le Raincy" />
-          </div>
-
-          <div class="field-full">
-            <label class="field-label" for="googleMapsInput">Lien Google Maps</label>
-            <input id="googleMapsInput" class="text-input" type="text" placeholder="Ex : https://maps.google.com/..." />
-          </div>
-
-          <div class="field-full">
-            <label class="field-label" for="googleReviewInput">Lien Google avis</label>
-            <input id="googleReviewInput" class="text-input" type="text" placeholder="Ex : https://g.page/r/.../review" />
-          </div>
-
-          <div class="field-full">
-            <label class="field-label" for="notesInput">Notes</label>
-            <input id="notesInput" class="text-input" type="text" placeholder="Ex : Salon pilote SHORTA" />
+          <div id="createResult" class="create-result">
+            <div class="result-title">Salon créé avec succès</div>
+            <div id="createResultLines"></div>
+            <div class="result-link-row">
+              <input id="createResultLink" class="result-link-input" readonly />
+              <button id="copyCreatedLinkBtn" class="btn btn-secondary">Copier le lien borne</button>
+            </div>
+            <div class="result-qr-wrap">
+              <div class="result-qr-box">
+                <img id="createResultQr" alt="QR code borne" />
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="form-actions">
-          <button id="createSalonBtn" class="btn btn-primary">Créer le salon</button>
-          <button id="clearFormBtn" class="btn btn-secondary">Vider le formulaire</button>
-        </div>
+        <div class="panel">
+          <h2 class="panel-title">Vue rapide</h2>
+          <p class="panel-subtitle">
+            Cette version admin permet déjà de gérer plusieurs salons, de créer un nouveau client, de récupérer son lien borne et de contrôler l’activité.
+          </p>
 
-        <div id="createStatus" class="create-status"></div>
+          <div class="kpis" style="margin-bottom:0;">
+            <div class="kpi-card">
+              <div class="kpi-label">Salons</div>
+              <div id="kpiSalons" class="kpi-value">0</div>
+            </div>
 
-        <div id="createResult" class="create-result">
-          <div class="result-title">Salon créé avec succès</div>
-          <div id="createResultLines"></div>
-          <div class="result-link-row">
-            <input id="createResultLink" class="result-link-input" readonly />
-            <button id="copyCreatedLinkBtn" class="btn btn-secondary">Copier le lien borne</button>
-          </div>
-          <div class="result-qr-wrap">
-            <div class="result-qr-box">
-              <img id="createResultQr" alt="QR code borne" />
+            <div class="kpi-card">
+              <div class="kpi-label">Salons actifs</div>
+              <div id="kpiActiveSalons" class="kpi-value">0</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-label">Devices</div>
+              <div id="kpiDevices" class="kpi-value">0</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-label">Events</div>
+              <div id="kpiEvents" class="kpi-value">0</div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="panel">
-        <h2 class="panel-title">Vue rapide</h2>
-        <p class="panel-subtitle">
-          Cette version admin permet déjà de gérer plusieurs salons, de créer un nouveau client, de récupérer son lien borne et de contrôler l’activité.
-        </p>
+        <h1 class="panel-title">Liste des salons</h1>
 
-        <div class="kpis" style="margin-bottom:0;">
-          <div class="kpi-card">
-            <div class="kpi-label">Salons</div>
-            <div id="kpiSalons" class="kpi-value">0</div>
-          </div>
+        <div id="status" class="status-bar"></div>
+        <div id="errorBox" class="error-box"></div>
 
-          <div class="kpi-card">
-            <div class="kpi-label">Salons actifs</div>
-            <div id="kpiActiveSalons" class="kpi-value">0</div>
-          </div>
-
-          <div class="kpi-card">
-            <div class="kpi-label">Devices</div>
-            <div id="kpiDevices" class="kpi-value">0</div>
-          </div>
-
-          <div class="kpi-card">
-            <div class="kpi-label">Events</div>
-            <div id="kpiEvents" class="kpi-value">0</div>
-          </div>
-        </div>
+        <div id="salonsList" class="salons-list"></div>
       </div>
-    </div>
-
-    <div class="panel">
-      <h1 class="panel-title">Liste des salons</h1>
-
-      <div id="status" class="status-bar"></div>
-      <div id="errorBox" class="error-box"></div>
-
-      <div id="salonsList" class="salons-list"></div>
     </div>
   </div>
 
@@ -649,7 +731,17 @@
     const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu'
     const APP_BASE_URL = 'https://shorta-339p.vercel.app'
 
+    const ADMIN_PASSWORD = 'SHORTA2026!'
+    const ADMIN_SESSION_KEY = 'shorta_admin_unlocked'
+
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    const loginScreenEl = document.getElementById('loginScreen')
+    const adminAppEl = document.getElementById('adminApp')
+    const adminPasswordInputEl = document.getElementById('adminPasswordInput')
+    const loginBtnEl = document.getElementById('loginBtn')
+    const loginStatusEl = document.getElementById('loginStatus')
+    const logoutBtnEl = document.getElementById('logoutBtn')
 
     const statusEl = document.getElementById('status')
     const errorBoxEl = document.getElementById('errorBox')
@@ -1186,6 +1278,48 @@
       }
     }
 
+    function isAdminUnlocked() {
+      return sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true'
+    }
+
+    function unlockAdmin() {
+      sessionStorage.setItem(ADMIN_SESSION_KEY, 'true')
+      loginScreenEl.classList.add('hidden')
+      adminAppEl.classList.remove('hidden')
+      loadDashboard()
+    }
+
+    function lockAdmin() {
+      sessionStorage.removeItem(ADMIN_SESSION_KEY)
+      adminAppEl.classList.add('hidden')
+      loginScreenEl.classList.remove('hidden')
+      adminPasswordInputEl.value = ''
+      loginStatusEl.textContent = ''
+    }
+
+    function tryLogin() {
+      const value = adminPasswordInputEl.value
+
+      if (value === ADMIN_PASSWORD) {
+        loginStatusEl.textContent = ''
+        unlockAdmin()
+        return
+      }
+
+      loginStatusEl.textContent = 'Mot de passe incorrect.'
+    }
+
+    function bootSecurity() {
+      if (isAdminUnlocked()) {
+        loginScreenEl.classList.add('hidden')
+        adminAppEl.classList.remove('hidden')
+        loadDashboard()
+      } else {
+        adminAppEl.classList.add('hidden')
+        loginScreenEl.classList.remove('hidden')
+      }
+    }
+
     searchInputEl.addEventListener('input', renderSalons)
     refreshBtnEl.addEventListener('click', loadDashboard)
     createSalonBtnEl.addEventListener('click', createSalon)
@@ -1206,7 +1340,15 @@
       }
     })
 
-    loadDashboard()
+    loginBtnEl.addEventListener('click', tryLogin)
+    adminPasswordInputEl.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        tryLogin()
+      }
+    })
+    logoutBtnEl.addEventListener('click', lockAdmin)
+
+    bootSecurity()
   </script>
 </body>
 </html>

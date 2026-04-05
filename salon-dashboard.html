@@ -3,39 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SHORTA — Dashboard Salon</title>
+  <title>SHORTA — Dashboard Salon Debug Final</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #07152d;
-      --panel: #1b2943;
-      --panel-2: #223252;
-      --text: #ffffff;
-      --muted: #9fb0d1;
-      --green: #22c55e;
-      --orange: #f59e0b;
-      --red: #ef4444;
-      --blue: #60a5fa;
-      --border: rgba(255,255,255,0.06);
-      --shadow: 0 10px 28px rgba(0,0,0,0.25);
-      --radius: 18px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: Arial, sans-serif;
-      background:
-        radial-gradient(circle at top right, rgba(96,165,250,0.08), transparent 25%),
-        linear-gradient(180deg, #051225 0%, #07152d 100%);
-      color: var(--text);
+      background: linear-gradient(180deg, #051225 0%, #07152d 100%);
+      color: white;
       min-height: 100vh;
       padding: 24px;
     }
@@ -56,12 +35,11 @@
 
     .title-wrap h1 {
       font-size: 42px;
-      font-weight: 800;
       margin-bottom: 8px;
     }
 
     .title-wrap p {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 15px;
     }
 
@@ -86,21 +64,31 @@
       white-space: pre-wrap;
     }
 
-    .hero {
-      background: var(--panel);
-      border-radius: 22px;
+    .success-box {
+      display: none;
+      background: rgba(34,197,94,0.12);
+      color: #bbf7d0;
+      border: 1px solid rgba(34,197,94,0.35);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+
+    .hero, .card {
+      background: #1b2943;
+      border-radius: 18px;
       padding: 22px;
-      margin-bottom: 22px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      margin-bottom: 18px;
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .hero-grid {
       display: flex;
       justify-content: space-between;
       gap: 18px;
-      align-items: center;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .hero-left h2 {
@@ -109,7 +97,7 @@
     }
 
     .hero-left p {
-      color: var(--muted);
+      color: #9fb0d1;
       line-height: 1.5;
     }
 
@@ -121,14 +109,14 @@
 
     .mini-card {
       background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       padding: 14px 16px;
       min-width: 160px;
     }
 
     .mini-card .label {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 12px;
       margin-bottom: 6px;
     }
@@ -143,19 +131,11 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    .card {
-      background: var(--panel);
-      border-radius: var(--radius);
-      padding: 22px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      margin-bottom: 18px;
     }
 
     .kpi-card .label {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 14px;
       margin-bottom: 10px;
     }
@@ -167,7 +147,7 @@
     }
 
     .kpi-card .sub {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 13px;
       line-height: 1.4;
     }
@@ -176,14 +156,14 @@
       display: grid;
       grid-template-columns: 1.35fr 1fr;
       gap: 18px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
     }
 
     .grid-bottom {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
     }
 
     .section-title {
@@ -193,14 +173,14 @@
     }
 
     .section-subtitle {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 13px;
       margin-bottom: 16px;
     }
 
     .chart-wrap {
       background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       padding: 14px;
       height: 340px;
@@ -234,7 +214,7 @@
       background: rgba(255,255,255,0.06);
       border-radius: 999px;
       overflow: hidden;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .bar {
@@ -242,9 +222,9 @@
       border-radius: 999px;
     }
 
-    .bar.happy { background: var(--green); }
-    .bar.neutral { background: var(--orange); }
-    .bar.sad { background: var(--red); }
+    .bar.happy { background: #22c55e; }
+    .bar.neutral { background: #f59e0b; }
+    .bar.sad { background: #ef4444; }
 
     .sat-value {
       text-align: right;
@@ -266,7 +246,7 @@
       padding: 14px 16px;
       border-radius: 14px;
       background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .list-item .left {
@@ -281,7 +261,7 @@
     }
 
     .list-item .subtitle {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 12px;
     }
 
@@ -290,36 +270,29 @@
       font-weight: 800;
     }
 
-    .footer-note {
-      text-align: center;
-      color: var(--muted);
+    .log-box {
+      font-family: Menlo, Monaco, monospace;
       font-size: 12px;
-      margin-top: 10px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0d1a30;
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 120px;
+      color: #dbeafe;
     }
 
     @media (max-width: 1100px) {
-      .grid-kpi {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .grid-main,
-      .grid-bottom {
-        grid-template-columns: 1fr;
-      }
+      .grid-kpi { grid-template-columns: repeat(2, 1fr); }
+      .grid-main, .grid-bottom { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 640px) {
-      body {
-        padding: 16px;
-      }
-      .title-wrap h1 {
-        font-size: 32px;
-      }
-      .grid-kpi {
-        grid-template-columns: 1fr;
-      }
-      .sat-row {
-        grid-template-columns: 56px 1fr 60px;
-      }
+      body { padding: 16px; }
+      .title-wrap h1 { font-size: 32px; }
+      .grid-kpi { grid-template-columns: 1fr; }
+      .sat-row { grid-template-columns: 56px 1fr 60px; }
     }
   </style>
 </head>
@@ -328,12 +301,13 @@
     <div class="topbar">
       <div class="title-wrap">
         <h1>Dashboard Salon</h1>
-        <p id="pageSubtitle">Chargement du salon...</p>
+        <p id="pageSubtitle">Initialisation...</p>
       </div>
       <button class="refresh-btn" onclick="window.location.reload()">Actualiser</button>
     </div>
 
     <div id="alertBox" class="alert-box"></div>
+    <div id="successBox" class="success-box"></div>
 
     <div class="hero">
       <div class="hero-grid">
@@ -433,20 +407,46 @@
       </div>
     </div>
 
-    <div class="footer-note">SHORTA — Dashboard salon V1</div>
+    <div class="card">
+      <div class="section-title">Logs techniques</div>
+      <div class="section-subtitle">Pour voir exactement où ça bloque</div>
+      <div id="logBox" class="log-box">Démarrage...</div>
+    </div>
   </div>
 
   <script>
     const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu';
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const logLines = [];
     let reviewsChartInstance = null;
+
+    function log(message, data = null) {
+      let line = message;
+      if (data !== null) {
+        try {
+          line += '\n' + JSON.stringify(data, null, 2);
+        } catch (e) {
+          line += '\n' + String(data);
+        }
+      }
+      logLines.push(line);
+      document.getElementById('logBox').textContent = logLines.join('\n\n----------------\n\n');
+      console.log(message, data || '');
+    }
 
     function showError(message, details = null) {
       const box = document.getElementById('alertBox');
       box.style.display = 'block';
       box.textContent = details ? message + '\n\n' + JSON.stringify(details, null, 2) : message;
+      log('ERREUR', { message, details });
+    }
+
+    function showSuccess(message) {
+      const box = document.getElementById('successBox');
+      box.style.display = 'block';
+      box.textContent = message;
+      log('SUCCESS', { message });
     }
 
     function safeText(value, fallback = '-') {
@@ -528,67 +528,38 @@
       if (type === 'feedback_submit') return 'sad';
 
       if (type === 'emoji_click') {
-        if (
-          raw.includes('neutral') ||
-          raw.includes('orange') ||
-          raw.includes('😐')
-        ) return 'neutral';
-
-        if (
-          raw.includes('sad') ||
-          raw.includes('negative') ||
-          raw.includes('red') ||
-          raw.includes('😞')
-        ) return 'sad';
-
-        if (
-          raw.includes('happy') ||
-          raw.includes('positive') ||
-          raw.includes('green') ||
-          raw.includes('😀')
-        ) return 'happy';
-
+        if (raw.includes('neutral') || raw.includes('orange') || raw.includes('😐')) return 'neutral';
+        if (raw.includes('sad') || raw.includes('negative') || raw.includes('red') || raw.includes('😞')) return 'sad';
+        if (raw.includes('happy') || raw.includes('positive') || raw.includes('green') || raw.includes('😀')) return 'happy';
         return 'happy';
       }
 
       return 'other';
     }
 
-    async function fetchSalonByCode(salonCode) {
-      const response = await supabase
-        .from('salons')
-        .select('*')
-        .eq('salon_code', salonCode)
-        .limit(1);
+    function computeStats(events) {
+      let happy = 0;
+      let neutral = 0;
+      let sad = 0;
 
-      if (response.error) throw response.error;
-      if (!response.data || response.data.length === 0) {
-        throw new Error('Aucun salon trouvé pour ce salon_code.');
-      }
+      events.forEach(row => {
+        const result = classifyEvent(row);
+        if (result === 'happy') happy++;
+        if (result === 'neutral') neutral++;
+        if (result === 'sad') sad++;
+      });
 
-      return response.data[0];
-    }
+      const total = happy + neutral + sad;
 
-    async function fetchEventsBySalonId(salonId) {
-      const response = await supabase
-        .from('events')
-        .select('*')
-        .eq('salon_id', salonId)
-        .order('created_at', { ascending: true });
-
-      if (response.error) throw response.error;
-      return response.data || [];
-    }
-
-    async function fetchReviewHistoryBySalonId(salonId) {
-      const response = await supabase
-        .from('review_history')
-        .select('*')
-        .eq('salon_id', salonId)
-        .order('captured_at', { ascending: true });
-
-      if (response.error) throw response.error;
-      return response.data || [];
+      return {
+        happy,
+        neutral,
+        sad,
+        total,
+        happyPct: total ? Math.round((happy / total) * 100) : 0,
+        neutralPct: total ? Math.round((neutral / total) * 100) : 0,
+        sadPct: total ? Math.round((sad / total) * 100) : 0
+      };
     }
 
     function renderHeader(salon) {
@@ -621,8 +592,7 @@
           ? `Mis à jour le ${formatDateTime(getReviewDate(reviewHistory[reviewHistory.length - 1]))}`
           : 'Aucune ligne review_history trouvée';
 
-      document.getElementById('kpiReviewDelta').textContent =
-        reviewDelta >= 0 ? `+${reviewDelta}` : String(reviewDelta);
+      document.getElementById('kpiReviewDelta').textContent = reviewDelta >= 0 ? `+${reviewDelta}` : String(reviewDelta);
       document.getElementById('kpiReviewDeltaSub').textContent =
         reviewHistory.length >= 2
           ? 'Comparaison avec le point précédent'
@@ -796,61 +766,127 @@
       });
     }
 
-    function computeStats(events) {
-      let happy = 0;
-      let neutral = 0;
-      let sad = 0;
-
-      events.forEach(row => {
-        const result = classifyEvent(row);
-        if (result === 'happy') happy++;
-        if (result === 'neutral') neutral++;
-        if (result === 'sad') sad++;
-      });
-
-      const total = happy + neutral + sad;
-
-      return {
-        happy,
-        neutral,
-        sad,
-        total,
-        happyPct: total ? Math.round((happy / total) * 100) : 0,
-        neutralPct: total ? Math.round((neutral / total) * 100) : 0,
-        sadPct: total ? Math.round((sad / total) * 100) : 0
-      };
-    }
-
     async function loadDashboard() {
       try {
+        log('1. Début loadDashboard');
+        document.getElementById('pageSubtitle').textContent = 'Lecture du paramètre URL...';
+
         const params = new URLSearchParams(window.location.search);
         const salonCode = params.get('salon');
+        log('2. Paramètre salon', { salonCode });
 
         if (!salonCode) {
           showError("Paramètre manquant dans l’URL. Exemple : ?salon=CHELLES_TEST");
           return;
         }
 
-        const salon = await fetchSalonByCode(salonCode);
-        renderHeader(salon);
+        document.getElementById('pageSubtitle').textContent = 'Création client Supabase...';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        log('3. Client Supabase créé');
 
-        const events = await fetchEventsBySalonId(salon.id);
-        const reviewHistory = await fetchReviewHistoryBySalonId(salon.id);
+        document.getElementById('pageSubtitle').textContent = 'Lecture table salons...';
+        const salonResponse = await supabase
+          .from('salons')
+          .select('*')
+          .eq('salon_code', salonCode)
+          .limit(1);
+
+        log('4. Réponse salons', salonResponse);
+
+        if (salonResponse.error) {
+          throw salonResponse.error;
+        }
+
+        if (!salonResponse.data || salonResponse.data.length === 0) {
+          throw new Error('Aucun salon trouvé pour ce salon_code.');
+        }
+
+        const salon = salonResponse.data[0];
+        renderHeader(salon);
+        log('5. Salon trouvé', salon);
+
+        document.getElementById('pageSubtitle').textContent = 'Lecture table events...';
+        const eventsResponse = await supabase
+          .from('events')
+          .select('*')
+          .eq('salon_id', salon.id)
+          .order('created_at', { ascending: true });
+
+        log('6. Réponse events', {
+          error: eventsResponse.error,
+          count: eventsResponse.data ? eventsResponse.data.length : 0
+        });
+
+        if (eventsResponse.error) {
+          throw eventsResponse.error;
+        }
+
+        const events = eventsResponse.data || [];
+
+        document.getElementById('pageSubtitle').textContent = 'Lecture review_history...';
+        const reviewResponse = await supabase
+          .from('review_history')
+          .select('*')
+          .eq('salon_id', salon.id)
+          .order('captured_at', { ascending: true });
+
+        log('7. Réponse review_history', {
+          error: reviewResponse.error,
+          count: reviewResponse.data ? reviewResponse.data.length : 0
+        });
+
+        if (reviewResponse.error) {
+          throw reviewResponse.error;
+        }
+
+        const reviewHistory = reviewResponse.data || [];
         const stats = computeStats(events);
 
+        log('8. Stats calculées', stats);
+
         renderKpis(salon, events, reviewHistory, stats);
+        log('9. KPI affichés');
+
         renderSatisfaction(stats);
+        log('10. Satisfaction affichée');
+
         renderReviewsChart(reviewHistory, salon);
+        log('11. Graphique affiché');
+
         renderActivity(events);
+        log('12. Activité affichée');
+
         renderSummary(salon, events, reviewHistory, stats);
+        log('13. Résumé affiché');
+
+        document.getElementById('pageSubtitle').textContent = `Salon chargé : ${salon.salon_code}`;
+        showSuccess('Dashboard chargé avec succès.');
       } catch (error) {
-        showError("Le dashboard n’a pas pu charger les données du salon.", {
+        showError('Le dashboard a rencontré une erreur.', {
           message: error.message || String(error),
           code: error.code || null,
-          hint: error.hint || null
+          hint: error.hint || null,
+          details: error.details || null
         });
       }
     }
+
+    window.onerror = function(message, source, lineno, colno, error) {
+      showError('Erreur JavaScript détectée.', {
+        message,
+        source,
+        lineno,
+        colno,
+        stack: error && error.stack ? error.stack : null
+      });
+    };
+
+    window.addEventListener('unhandledrejection', function(event) {
+      showError('Promesse rejetée non gérée.', {
+        reason: event.reason && event.reason.message ? event.reason.message : event.reason,
+        stack: event.reason && event.reason.stack ? event.reason.stack : null
+      });
+    });
 
     loadDashboard();
   </script>

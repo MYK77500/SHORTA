@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>SHORTA — Dashboard Salon</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
+}
+.card {
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+h1 {
+  margin-bottom: 20px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Dashboard Salon</h1>
+
+<div id="kpis" class="grid"></div>
+
+<div class="card">
+  <h2>Evolution avis Google</h2>
+  <canvas id="chartReviews"></canvas>
+</div>
+
+<div class="card">
+  <h2>Satisfaction client</h2>
+  <div id="satisfaction"></div>
+</div>
+
+<div class="card">
+  <h2>Activité récente</h2>
+  <div id="activity"></div>
+</div>
+
+<script>
+
+// ✅ TES VRAIES CLÉS (déjà intégrées)
+const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co'
+const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu'
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// récupérer salon depuis URL
+const params = new URLSearchParams(window.location.search)
+const salon_code = params.get('salon')
+
+// sécurité
+if (!salon_code) {
+  document.body.innerHTML = "❌ salon manquant dans URL"
+}
+
+// LOAD DATA
+async function loadDashboard() {
+
+  // EVENTS
+  const { data: events } = await supabase
+    .from('events')
+    .select('*')
+    .eq('salon_code', salon_code)
+
+  // REVIEW HISTORY
+  const { data: reviews } = await supabase
+    .from('review_history')
+    .select('*')
+    .eq('salon_code', salon_code)
+    .order('created_at', { ascending: true })
+
+  // KPI CALCUL
+  const totalEvents = events.length
+
+  const happy = events.filter(e => e.type === 'happy').length
+  const neutral = events.filter(e => e.type === 'neutral').length
+  const sad = events.filter(e => e.type === 'sad').length
+
+  const negativeFeedback = sad
+
+  const lastReview = reviews.length > 0 ? reviews[reviews.length - 1].count : 0
+
+  // KPI DISPLAY
+  document.getElementById('kpis').innerHTML = `
+    <div class="card">Avis Google<br><b>${lastReview}</b></div>
+    <div class="card">Total events<br><b>${totalEvents}</b></div>
+    <div class="card">Feedback négatif<br><b>${negativeFeedback}</b></div>
+    <div class="card">Happy %<br><b>${Math.round((happy/totalEvents)*100)||0}%</b></div>
+  `
+
+  // SATISFACTION
+  document.getElementById('satisfaction').innerHTML = `
+    😀 ${Math.round((happy/totalEvents)*100)||0}% <br>
+    😐 ${Math.round((neutral/totalEvents)*100)||0}% <br>
+    😞 ${Math.round((sad/totalEvents)*100)||0}%
+  `
+
+  // CHART REVIEWS
+  const labels = reviews.map(r => new Date(r.created_at).toLocaleDateString())
+  const data = reviews.map(r => r.count)
+
+  new Chart(document.getElementById('chartReviews'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Avis Google',
+        data,
+        borderWidth: 2
+      }]
+    }
+  })
+
+  // ACTIVITÉ (par jour)
+  const activityMap = {}
+
+  events.forEach(e => {
+    const day = new Date(e.created_at).toLocaleDateString()
+    activityMap[day] = (activityMap[day] || 0) + 1
+  })
+
+  let activityHTML = ""
+  Object.entries(activityMap).slice(-7).forEach(([day, count]) => {
+    activityHTML += `${day} : ${count} events<br>`
+  })
+
+  document.getElementById('activity').innerHTML = activityHTML
+
+}
+
+loadDashboard()
+
+</script>
+
+</body>
+</html>

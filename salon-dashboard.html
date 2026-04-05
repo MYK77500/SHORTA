@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SHORTA — Dashboard Salon Debug</title>
+  <title>SHORTA — Dashboard Salon Debug Final</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     * { box-sizing: border-box; }
@@ -18,16 +17,17 @@
       padding: 24px;
     }
     .container {
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
     }
     h1 {
-      margin: 0 0 8px 0;
-      font-size: 42px;
+      margin: 0 0 10px 0;
+      font-size: 44px;
     }
     .subtitle {
       color: #9fb0d1;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
+      font-size: 18px;
     }
     .card {
       background: #1c2942;
@@ -56,366 +56,278 @@
       font-weight: bold;
     }
     .ok { color: #4ade80; }
-    .warn { color: #f59e0b; }
     .bad { color: #f87171; }
-    .line {
-      margin: 8px 0;
-      color: #dbe7ff;
-    }
     .mono {
       font-family: Menlo, Monaco, monospace;
       white-space: pre-wrap;
       word-break: break-word;
       font-size: 13px;
-      line-height: 1.45;
+      line-height: 1.5;
       background: #0f1a2d;
       padding: 14px;
       border-radius: 12px;
       overflow-x: auto;
+      min-height: 60px;
     }
-    canvas {
-      background: #fff;
-      border-radius: 12px;
-      padding: 10px;
-      max-height: 380px;
+    .error-box {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fecaca;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      display: none;
     }
-    .bar-wrap {
-      height: 18px;
-      background: #0f1a2d;
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 6px;
-      margin-bottom: 16px;
+    .success-box {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #bbf7d0;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      display: none;
     }
-    .bar {
-      height: 100%;
-      border-radius: 999px;
-    }
-    .happy { background: #22c55e; }
-    .neutral { background: #f59e0b; }
-    .sad { background: #ef4444; }
     @media (max-width: 980px) {
       .grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 640px) {
       .grid { grid-template-columns: 1fr; }
-      h1 { font-size: 30px; }
+      h1 { font-size: 32px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Dashboard Salon</h1>
-    <div class="subtitle" id="subtitle">Chargement...</div>
+    <div class="subtitle" id="subtitle">Initialisation…</div>
+
+    <div id="errorBox" class="error-box"></div>
+    <div id="successBox" class="success-box"></div>
 
     <div class="grid" id="kpis">
-      <div class="kpi"><div class="kpi-label">Salon trouvé</div><div class="kpi-value">...</div></div>
-      <div class="kpi"><div class="kpi-label">Events</div><div class="kpi-value">...</div></div>
-      <div class="kpi"><div class="kpi-label">Review history</div><div class="kpi-value">...</div></div>
-      <div class="kpi"><div class="kpi-label">Avis Google actuel</div><div class="kpi-value">...</div></div>
+      <div class="kpi">
+        <div class="kpi-label">Salon trouvé</div>
+        <div class="kpi-value">...</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Events</div>
+        <div class="kpi-value">...</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Review history</div>
+        <div class="kpi-value">...</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avis Google actuel</div>
+        <div class="kpi-value">...</div>
+      </div>
     </div>
 
     <div class="card">
-      <h2>Satisfaction client</h2>
-      <div class="line">Happy 😀 <span id="happyText">0</span></div>
-      <div class="bar-wrap"><div id="happyBar" class="bar happy" style="width:0%"></div></div>
-
-      <div class="line">Neutral 😐 <span id="neutralText">0</span></div>
-      <div class="bar-wrap"><div id="neutralBar" class="bar neutral" style="width:0%"></div></div>
-
-      <div class="line">Sad 😞 <span id="sadText">0</span></div>
-      <div class="bar-wrap"><div id="sadBar" class="bar sad" style="width:0%"></div></div>
+      <h2>Logs</h2>
+      <div id="logBox" class="mono">Aucun log pour le moment…</div>
     </div>
 
     <div class="card">
-      <h2>Evolution avis Google</h2>
-      <canvas id="reviewsChart"></canvas>
+      <h2>Résultat table salons</h2>
+      <div id="salonsBox" class="mono">Chargement…</div>
     </div>
 
     <div class="card">
-      <h2>Activité récente</h2>
-      <div id="activityBox" class="mono">Chargement...</div>
+      <h2>Résultat table events</h2>
+      <div id="eventsBox" class="mono">Chargement…</div>
     </div>
 
     <div class="card">
-      <h2>DEBUG — Salon trouvé</h2>
-      <div id="salonBox" class="mono">Chargement...</div>
-    </div>
-
-    <div class="card">
-      <h2>DEBUG — 5 premières lignes events</h2>
-      <div id="eventsBox" class="mono">Chargement...</div>
-    </div>
-
-    <div class="card">
-      <h2>DEBUG — 5 premières lignes review_history</h2>
-      <div id="reviewsBox" class="mono">Chargement...</div>
-    </div>
-
-    <div class="card">
-      <h2>DEBUG — Colonnes détectées dans events</h2>
-      <div id="eventKeysBox" class="mono">Chargement...</div>
-    </div>
-
-    <div class="card">
-      <h2>DEBUG — Colonnes détectées dans review_history</h2>
-      <div id="reviewKeysBox" class="mono">Chargement...</div>
-    </div>
-
-    <div class="card">
-      <h2>DEBUG — Messages système</h2>
-      <div id="debugLog" class="mono">Initialisation...</div>
+      <h2>Résultat table review_history</h2>
+      <div id="reviewsBox" class="mono">Chargement…</div>
     </div>
   </div>
 
   <script>
     const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const params = new URLSearchParams(window.location.search);
-    const salonCode = params.get('salon');
+    const logLines = [];
 
-    const debugMessages = [];
-    function log(msg, obj = null) {
-      const line = obj ? `${msg}\n${JSON.stringify(obj, null, 2)}` : msg;
-      debugMessages.push(line);
-      document.getElementById('debugLog').textContent = debugMessages.join('\n\n----------------\n\n');
-      console.log(msg, obj || '');
-    }
-
-    function safeString(v) {
-      if (v === null || v === undefined) return '';
-      return String(v).trim();
-    }
-
-    function normalizeSentiment(eventRow) {
-      const candidates = [
-        eventRow.type,
-        eventRow.event_type,
-        eventRow.sentiment,
-        eventRow.mood,
-        eventRow.choice,
-        eventRow.button,
-        eventRow.status,
-        eventRow.value,
-        eventRow.action
-      ];
-
-      for (const raw of candidates) {
-        const v = safeString(raw).toLowerCase();
-
-        if (!v) continue;
-
-        if (
-          v === 'happy' || v === 'positive' || v === 'good' || v === 'avis' ||
-          v === 'green' || v === '😀' || v === 'smile' || v.includes('happy')
-        ) return 'happy';
-
-        if (
-          v === 'neutral' || v === 'orange' || v === '😐' || v.includes('neutral')
-        ) return 'neutral';
-
-        if (
-          v === 'sad' || v === 'negative' || v === 'bad' || v === 'feedback' ||
-          v === 'red' || v === '😞' || v === '☹️' || v.includes('sad')
-        ) return 'sad';
-      }
-
-      return 'unknown';
-    }
-
-    function getReviewCount(row) {
-      const candidates = [
-        row.count,
-        row.review_count,
-        row.total_reviews,
-        row.google_reviews,
-        row.value,
-        row.current_count
-      ];
-
-      for (const c of candidates) {
-        if (c !== null && c !== undefined && c !== '') {
-          const n = Number(c);
-          if (!Number.isNaN(n)) return n;
+    function addLog(message, data = null) {
+      let line = message;
+      if (data !== null) {
+        try {
+          line += '\n' + JSON.stringify(data, null, 2);
+        } catch (e) {
+          line += '\n' + String(data);
         }
       }
-      return 0;
+      logLines.push(line);
+      document.getElementById('logBox').textContent = logLines.join('\n\n----------------\n\n');
+      console.log(message, data || '');
     }
 
-    function getRowDate(row) {
-      return (
-        row.created_at ||
-        row.date ||
-        row.recorded_at ||
-        row.inserted_at ||
-        row.updated_at ||
-        null
-      );
-    }
-
-    async function loadDashboard() {
-      if (!salonCode) {
-        document.getElementById('subtitle').textContent = 'Erreur : paramètre salon manquant';
-        log('Paramètre ?salon= manquant dans l’URL');
-        return;
-      }
-
-      document.getElementById('subtitle').textContent = `Salon demandé : ${salonCode}`;
-      log('Salon demandé', { salonCode });
-
-      // 1) salon
-      const { data: salonRows, error: salonError } = await supabase
-        .from('salons')
-        .select('*')
-        .eq('salon_code', salonCode);
-
-      if (salonError) {
-        log('Erreur lecture table salons', salonError);
-      } else {
-        log('Résultat salons', salonRows);
-      }
-
-      const salonFound = salonRows && salonRows.length > 0;
-      document.getElementById('salonBox').textContent = JSON.stringify(salonRows || [], null, 2);
-
-      // 2) events
-      const { data: eventRows, error: eventError } = await supabase
-        .from('events')
-        .select('*')
-        .eq('salon_code', salonCode)
-        .order('created_at', { ascending: true });
-
-      if (eventError) {
-        log('Erreur lecture table events', eventError);
-      } else {
-        log('Résultat events count', { count: (eventRows || []).length });
-      }
-
-      document.getElementById('eventsBox').textContent = JSON.stringify((eventRows || []).slice(0, 5), null, 2);
-
-      // 3) review_history
-      const { data: reviewRows, error: reviewError } = await supabase
-        .from('review_history')
-        .select('*')
-        .eq('salon_code', salonCode)
-        .order('created_at', { ascending: true });
-
-      if (reviewError) {
-        log('Erreur lecture table review_history', reviewError);
-      } else {
-        log('Résultat review_history count', { count: (reviewRows || []).length });
-      }
-
-      document.getElementById('reviewsBox').textContent = JSON.stringify((reviewRows || []).slice(0, 5), null, 2);
-
-      // 4) colonnes détectées
-      const eventKeys = eventRows && eventRows.length ? Object.keys(eventRows[0]) : [];
-      const reviewKeys = reviewRows && reviewRows.length ? Object.keys(reviewRows[0]) : [];
-
-      document.getElementById('eventKeysBox').textContent = JSON.stringify(eventKeys, null, 2);
-      document.getElementById('reviewKeysBox').textContent = JSON.stringify(reviewKeys, null, 2);
-
-      // 5) KPI
-      const totalEvents = (eventRows || []).length;
-      const totalReviewsRows = (reviewRows || []).length;
-      const currentGoogleReviews = totalReviewsRows ? getReviewCount(reviewRows[reviewRows.length - 1]) : 0;
-
-      const sentiments = (eventRows || []).map(normalizeSentiment);
-      const happyCount = sentiments.filter(x => x === 'happy').length;
-      const neutralCount = sentiments.filter(x => x === 'neutral').length;
-      const sadCount = sentiments.filter(x => x === 'sad').length;
-
-      const happyPct = totalEvents ? Math.round((happyCount / totalEvents) * 100) : 0;
-      const neutralPct = totalEvents ? Math.round((neutralCount / totalEvents) * 100) : 0;
-      const sadPct = totalEvents ? Math.round((sadCount / totalEvents) * 100) : 0;
-
-      document.getElementById('kpis').innerHTML = `
-        <div class="kpi">
-          <div class="kpi-label">Salon trouvé</div>
-          <div class="kpi-value ${salonFound ? 'ok' : 'bad'}">${salonFound ? 'OUI' : 'NON'}</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">Events</div>
-          <div class="kpi-value">${totalEvents}</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">Review history</div>
-          <div class="kpi-value">${totalReviewsRows}</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">Avis Google actuel</div>
-          <div class="kpi-value">${currentGoogleReviews}</div>
-        </div>
-      `;
-
-      document.getElementById('happyText').textContent = `${happyCount} (${happyPct}%)`;
-      document.getElementById('neutralText').textContent = `${neutralCount} (${neutralPct}%)`;
-      document.getElementById('sadText').textContent = `${sadCount} (${sadPct}%)`;
-
-      document.getElementById('happyBar').style.width = happyPct + '%';
-      document.getElementById('neutralBar').style.width = neutralPct + '%';
-      document.getElementById('sadBar').style.width = sadPct + '%';
-
-      // 6) activité
-      const activityMap = {};
-      (eventRows || []).forEach(row => {
-        const d = getRowDate(row);
-        const key = d ? new Date(d).toLocaleDateString('fr-FR') : 'sans_date';
-        activityMap[key] = (activityMap[key] || 0) + 1;
-      });
-
-      const activityLines = Object.entries(activityMap)
-        .sort((a, b) => a[0].localeCompare(b[0]))
-        .slice(-10)
-        .map(([date, count]) => `${date} : ${count} event(s)`);
-
-      document.getElementById('activityBox').textContent =
-        activityLines.length ? activityLines.join('\n') : 'Aucune activité trouvée pour ce salon';
-
-      // 7) graphique avis
-      const chartLabels = [];
-      const chartValues = [];
-
-      (reviewRows || []).forEach(row => {
-        const d = getRowDate(row);
-        chartLabels.push(d ? new Date(d).toLocaleDateString('fr-FR') : 'sans_date');
-        chartValues.push(getReviewCount(row));
-      });
-
-      const ctx = document.getElementById('reviewsChart').getContext('2d');
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: chartLabels,
-          datasets: [{
-            label: 'Avis Google',
-            data: chartValues,
-            borderWidth: 2,
-            tension: 0.25
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false
+    function showError(message, data = null) {
+      const box = document.getElementById('errorBox');
+      let content = message;
+      if (data !== null) {
+        try {
+          content += '\n\n' + JSON.stringify(data, null, 2);
+        } catch (e) {
+          content += '\n\n' + String(data);
         }
-      });
-
-      log('Résumé final', {
-        salonFound,
-        totalEvents,
-        totalReviewsRows,
-        currentGoogleReviews,
-        happyCount,
-        neutralCount,
-        sadCount,
-        detectedEventKeys: eventKeys,
-        detectedReviewKeys: reviewKeys
-      });
+      }
+      box.style.display = 'block';
+      box.textContent = content;
+      addLog('ERREUR', { message, data });
     }
 
-    loadDashboard();
+    function showSuccess(message) {
+      const box = document.getElementById('successBox');
+      box.style.display = 'block';
+      box.textContent = message;
+      addLog('SUCCÈS', { message });
+    }
+
+    window.onerror = function(message, source, lineno, colno, error) {
+      showError('Erreur JavaScript capturée par window.onerror', {
+        message,
+        source,
+        lineno,
+        colno,
+        stack: error && error.stack ? error.stack : null
+      });
+    };
+
+    window.addEventListener('unhandledrejection', function(event) {
+      showError('Promesse rejetée non gérée', {
+        reason: event.reason && event.reason.message ? event.reason.message : event.reason,
+        stack: event.reason && event.reason.stack ? event.reason.stack : null
+      });
+    });
+
+    async function start() {
+      try {
+        document.getElementById('subtitle').textContent = 'Lecture des paramètres URL…';
+
+        const params = new URLSearchParams(window.location.search);
+        const salonCode = params.get('salon');
+
+        addLog('Paramètre salon récupéré', { salonCode });
+
+        if (!salonCode) {
+          showError('Paramètre URL manquant. Il faut ouvrir la page avec ?salon=CHELLES_TEST');
+          return;
+        }
+
+        document.getElementById('subtitle').textContent = 'Initialisation Supabase…';
+
+        const supabaseGlobal = window.supabase || self.supabase;
+
+        if (!supabaseGlobal) {
+          showError('La librairie Supabase ne s’est pas chargée. window.supabase est introuvable.');
+          return;
+        }
+
+        addLog('Librairie Supabase détectée', Object.keys(supabaseGlobal));
+
+        if (typeof supabaseGlobal.createClient !== 'function') {
+          showError('createClient est introuvable dans la librairie Supabase', {
+            availableKeys: Object.keys(supabaseGlobal)
+          });
+          return;
+        }
+
+        const client = supabaseGlobal.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        addLog('Client Supabase créé avec succès');
+
+        document.getElementById('subtitle').textContent = 'Lecture table salons…';
+
+        const salonsResponse = await client
+          .from('salons')
+          .select('*')
+          .eq('salon_code', salonCode);
+
+        addLog('Réponse salons brute', salonsResponse);
+
+        if (salonsResponse.error) {
+          showError('Erreur Supabase sur la table salons', salonsResponse.error);
+          return;
+        }
+
+        document.getElementById('salonsBox').textContent = JSON.stringify(salonsResponse.data, null, 2);
+
+        document.getElementById('subtitle').textContent = 'Lecture table events…';
+
+        const eventsResponse = await client
+          .from('events')
+          .select('*')
+          .eq('salon_code', salonCode);
+
+        addLog('Réponse events brute', eventsResponse);
+
+        if (eventsResponse.error) {
+          showError('Erreur Supabase sur la table events', eventsResponse.error);
+          return;
+        }
+
+        document.getElementById('eventsBox').textContent = JSON.stringify(eventsResponse.data, null, 2);
+
+        document.getElementById('subtitle').textContent = 'Lecture table review_history…';
+
+        const reviewsResponse = await client
+          .from('review_history')
+          .select('*')
+          .eq('salon_code', salonCode);
+
+        addLog('Réponse review_history brute', reviewsResponse);
+
+        if (reviewsResponse.error) {
+          showError('Erreur Supabase sur la table review_history', reviewsResponse.error);
+          return;
+        }
+
+        document.getElementById('reviewsBox').textContent = JSON.stringify(reviewsResponse.data, null, 2);
+
+        const salons = salonsResponse.data || [];
+        const events = eventsResponse.data || [];
+        const reviews = reviewsResponse.data || [];
+
+        let currentReviews = 0;
+        if (reviews.length > 0) {
+          const last = reviews[reviews.length - 1];
+          currentReviews =
+            Number(last.count ?? last.review_count ?? last.total_reviews ?? last.google_reviews ?? 0) || 0;
+        }
+
+        document.getElementById('kpis').innerHTML = `
+          <div class="kpi">
+            <div class="kpi-label">Salon trouvé</div>
+            <div class="kpi-value ${salons.length > 0 ? 'ok' : 'bad'}">${salons.length > 0 ? 'OUI' : 'NON'}</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Events</div>
+            <div class="kpi-value">${events.length}</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Review history</div>
+            <div class="kpi-value">${reviews.length}</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Avis Google actuel</div>
+            <div class="kpi-value">${currentReviews}</div>
+          </div>
+        `;
+
+        document.getElementById('subtitle').textContent = 'Chargement terminé';
+        showSuccess('Le script s’est exécuté jusqu’au bout. Si les blocs sont vides, ce n’est plus un bug JS mais un problème de données enregistrées.');
+      } catch (error) {
+        showError('Erreur générale dans start()', {
+          message: error.message,
+          stack: error.stack
+        });
+      }
+    }
+
+    start();
   </script>
 </body>
 </html>

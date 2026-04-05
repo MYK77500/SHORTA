@@ -3,37 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SHORTA — Dashboard Salon</title>
+  <title>SHORTA — Dashboard Salon Debug Final</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    :root {
-      --bg: #07152d;
-      --panel: #1b2943;
-      --text: #ffffff;
-      --muted: #9fb0d1;
-      --green: #22c55e;
-      --orange: #f59e0b;
-      --red: #ef4444;
-      --border: rgba(255,255,255,0.06);
-      --shadow: 0 10px 28px rgba(0,0,0,0.25);
-      --radius: 18px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: Arial, sans-serif;
-      background:
-        radial-gradient(circle at top right, rgba(96,165,250,0.08), transparent 25%),
-        linear-gradient(180deg, #051225 0%, #07152d 100%);
-      color: var(--text);
+      background: linear-gradient(180deg, #051225 0%, #07152d 100%);
+      color: white;
       min-height: 100vh;
       padding: 24px;
     }
@@ -54,20 +35,12 @@
 
     .title-wrap h1 {
       font-size: 42px;
-      font-weight: 800;
       margin-bottom: 8px;
     }
 
     .title-wrap p {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 15px;
-    }
-
-    .top-actions {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
     }
 
     .refresh-btn {
@@ -78,29 +51,6 @@
       padding: 12px 18px;
       font-weight: 700;
       cursor: pointer;
-    }
-
-    .period-bar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 22px;
-    }
-
-    .period-btn {
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .period-btn.active {
-      background: #f8fafc;
-      color: #07152d;
-      border-color: #f8fafc;
     }
 
     .alert-box {
@@ -114,21 +64,31 @@
       white-space: pre-wrap;
     }
 
-    .hero {
-      background: var(--panel);
-      border-radius: 22px;
+    .success-box {
+      display: none;
+      background: rgba(34,197,94,0.12);
+      color: #bbf7d0;
+      border: 1px solid rgba(34,197,94,0.35);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+
+    .hero, .card {
+      background: #1b2943;
+      border-radius: 18px;
       padding: 22px;
-      margin-bottom: 22px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      margin-bottom: 18px;
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .hero-grid {
       display: flex;
       justify-content: space-between;
       gap: 18px;
-      align-items: center;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .hero-left h2 {
@@ -137,7 +97,7 @@
     }
 
     .hero-left p {
-      color: var(--muted);
+      color: #9fb0d1;
       line-height: 1.5;
     }
 
@@ -149,14 +109,14 @@
 
     .mini-card {
       background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       padding: 14px 16px;
       min-width: 160px;
     }
 
     .mini-card .label {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 12px;
       margin-bottom: 6px;
     }
@@ -171,19 +131,11 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    .card {
-      background: var(--panel);
-      border-radius: var(--radius);
-      padding: 22px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      margin-bottom: 18px;
     }
 
     .kpi-card .label {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 14px;
       margin-bottom: 10px;
     }
@@ -195,7 +147,7 @@
     }
 
     .kpi-card .sub {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 13px;
       line-height: 1.4;
     }
@@ -204,14 +156,14 @@
       display: grid;
       grid-template-columns: 1.35fr 1fr;
       gap: 18px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
     }
 
     .grid-bottom {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
     }
 
     .section-title {
@@ -221,14 +173,14 @@
     }
 
     .section-subtitle {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 13px;
       margin-bottom: 16px;
     }
 
     .chart-wrap {
       background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       padding: 14px;
       height: 340px;
@@ -262,7 +214,7 @@
       background: rgba(255,255,255,0.06);
       border-radius: 999px;
       overflow: hidden;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .bar {
@@ -270,9 +222,9 @@
       border-radius: 999px;
     }
 
-    .bar.happy { background: var(--green); }
-    .bar.neutral { background: var(--orange); }
-    .bar.sad { background: var(--red); }
+    .bar.happy { background: #22c55e; }
+    .bar.neutral { background: #f59e0b; }
+    .bar.sad { background: #ef4444; }
 
     .sat-value {
       text-align: right;
@@ -294,7 +246,7 @@
       padding: 14px 16px;
       border-radius: 14px;
       background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
     .list-item .left {
@@ -309,7 +261,7 @@
     }
 
     .list-item .subtitle {
-      color: var(--muted);
+      color: #9fb0d1;
       font-size: 12px;
     }
 
@@ -318,40 +270,29 @@
       font-weight: 800;
     }
 
-    .footer-note {
-      text-align: center;
-      color: var(--muted);
+    .log-box {
+      font-family: Menlo, Monaco, monospace;
       font-size: 12px;
-      margin-top: 10px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0d1a30;
+      border-radius: 12px;
+      padding: 14px;
+      min-height: 120px;
+      color: #dbeafe;
     }
 
     @media (max-width: 1100px) {
-      .grid-kpi {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .grid-main,
-      .grid-bottom {
-        grid-template-columns: 1fr;
-      }
+      .grid-kpi { grid-template-columns: repeat(2, 1fr); }
+      .grid-main, .grid-bottom { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 640px) {
-      body {
-        padding: 16px;
-      }
-
-      .title-wrap h1 {
-        font-size: 32px;
-      }
-
-      .grid-kpi {
-        grid-template-columns: 1fr;
-      }
-
-      .sat-row {
-        grid-template-columns: 56px 1fr 60px;
-      }
+      body { padding: 16px; }
+      .title-wrap h1 { font-size: 32px; }
+      .grid-kpi { grid-template-columns: 1fr; }
+      .sat-row { grid-template-columns: 56px 1fr 60px; }
     }
   </style>
 </head>
@@ -360,23 +301,13 @@
     <div class="topbar">
       <div class="title-wrap">
         <h1>Dashboard Salon</h1>
-        <p id="pageSubtitle">Chargement du salon...</p>
+        <p id="pageSubtitle">Initialisation...</p>
       </div>
-
-      <div class="top-actions">
-        <button class="refresh-btn" onclick="window.location.reload()">Actualiser</button>
-      </div>
-    </div>
-
-    <div class="period-bar">
-      <button class="period-btn active" data-period="today">Aujourd’hui</button>
-      <button class="period-btn" data-period="7">7 jours</button>
-      <button class="period-btn" data-period="30">30 jours</button>
-      <button class="period-btn" data-period="90">90 jours</button>
-      <button class="period-btn" data-period="all">Tout</button>
+      <button class="refresh-btn" onclick="window.location.reload()">Actualiser</button>
     </div>
 
     <div id="alertBox" class="alert-box"></div>
+    <div id="successBox" class="success-box"></div>
 
     <div class="hero">
       <div class="hero-grid">
@@ -384,21 +315,18 @@
           <h2 id="salonName">Salon</h2>
           <p id="salonMeta">Lecture des données en cours...</p>
         </div>
-
         <div class="hero-right">
           <div class="mini-card">
             <div class="label">Code salon</div>
             <div class="value" id="miniSalonCode">-</div>
           </div>
-
           <div class="mini-card">
             <div class="label">Ville</div>
             <div class="value" id="miniCity">-</div>
           </div>
-
           <div class="mini-card">
-            <div class="label">Période</div>
-            <div class="value" id="miniPeriod">-</div>
+            <div class="label">Statut</div>
+            <div class="value" id="miniStatus">-</div>
           </div>
         </div>
       </div>
@@ -414,13 +342,13 @@
       <div class="card kpi-card">
         <div class="label">Évolution avis Google</div>
         <div class="value" id="kpiReviewDelta">0</div>
-        <div class="sub" id="kpiReviewDeltaSub">Comparaison dans la période</div>
+        <div class="sub" id="kpiReviewDeltaSub">Par rapport au point précédent</div>
       </div>
 
       <div class="card kpi-card">
         <div class="label">Nombre total d'events</div>
         <div class="value" id="kpiEvents">0</div>
-        <div class="sub" id="kpiEventsSub">Events sur la période</div>
+        <div class="sub" id="kpiEventsSub">Tous événements salon</div>
       </div>
 
       <div class="card kpi-card">
@@ -433,7 +361,7 @@
     <div class="grid-main">
       <div class="card">
         <div class="section-title">Évolution avis Google</div>
-        <div class="section-subtitle">Courbe filtrée selon la période choisie</div>
+        <div class="section-subtitle">Courbe construite à partir de review_history</div>
         <div class="chart-wrap">
           <canvas id="reviewsChart"></canvas>
         </div>
@@ -468,19 +396,21 @@
     <div class="grid-bottom">
       <div class="card">
         <div class="section-title">Activité récente</div>
-        <div class="section-subtitle">Nombre d'events par jour sur la période</div>
+        <div class="section-subtitle">Nombre d'events par jour</div>
         <div id="activityList" class="list"></div>
       </div>
 
       <div class="card">
         <div class="section-title">Résumé business</div>
-        <div class="section-subtitle">Lecture rapide sur la période</div>
+        <div class="section-subtitle">Lecture rapide pour le salon</div>
         <div id="summaryList" class="list"></div>
       </div>
     </div>
 
-    <div class="footer-note">
-      SHORTA — Dashboard salon V1
+    <div class="card">
+      <div class="section-title">Logs techniques</div>
+      <div class="section-subtitle">Pour voir exactement où ça bloque</div>
+      <div id="logBox" class="log-box">Démarrage...</div>
     </div>
   </div>
 
@@ -488,18 +418,35 @@
     const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu';
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
+    const logLines = [];
     let reviewsChartInstance = null;
-    let currentPeriod = 'today';
-    let salonData = null;
-    let allEvents = [];
-    let allReviewHistory = [];
+
+    function log(message, data = null) {
+      let line = message;
+      if (data !== null) {
+        try {
+          line += '\n' + JSON.stringify(data, null, 2);
+        } catch (e) {
+          line += '\n' + String(data);
+        }
+      }
+      logLines.push(line);
+      document.getElementById('logBox').textContent = logLines.join('\n\n----------------\n\n');
+      console.log(message, data || '');
+    }
 
     function showError(message, details = null) {
       const box = document.getElementById('alertBox');
       box.style.display = 'block';
       box.textContent = details ? message + '\n\n' + JSON.stringify(details, null, 2) : message;
+      log('ERREUR', { message, details });
+    }
+
+    function showSuccess(message) {
+      const box = document.getElementById('successBox');
+      box.style.display = 'block';
+      box.textContent = message;
+      log('SUCCESS', { message });
     }
 
     function safeText(value, fallback = '-') {
@@ -536,7 +483,6 @@
           if (!Number.isNaN(n)) return n;
         }
       }
-
       return 0;
     }
 
@@ -591,54 +537,6 @@
       return 'other';
     }
 
-    function getPeriodLabel(period) {
-      if (period === 'today') return 'Aujourd’hui';
-      if (period === '7') return '7 jours';
-      if (period === '30') return '30 jours';
-      if (period === '90') return '90 jours';
-      return 'Tout';
-    }
-
-    function getPeriodStartDate(period) {
-      const now = new Date();
-
-      if (period === 'all') return null;
-
-      if (period === 'today') {
-        const start = new Date(now);
-        start.setHours(0, 0, 0, 0);
-        return start;
-      }
-
-      const days = Number(period);
-      const start = new Date(now);
-      start.setDate(start.getDate() - days);
-      return start;
-    }
-
-    function isInPeriod(dateValue, period) {
-      if (period === 'all') return true;
-      if (!dateValue) return false;
-
-      const startDate = getPeriodStartDate(period);
-      if (!startDate) return true;
-
-      const d = new Date(dateValue);
-      if (Number.isNaN(d.getTime())) return false;
-
-      return d >= startDate;
-    }
-
-    function filterEventsByPeriod(events, period) {
-      return events.filter(row => isInPeriod(getEventDate(row), period));
-    }
-
-    function filterReviewsByPeriod(reviewHistory, period) {
-      if (period === 'all') return [...reviewHistory];
-
-      return reviewHistory.filter(row => isInPeriod(getReviewDate(row), period));
-    }
-
     function computeStats(events) {
       let happy = 0;
       let neutral = 0;
@@ -664,44 +562,6 @@
       };
     }
 
-    async function fetchSalonByCode(salonCode) {
-      const response = await supabase
-        .from('salons')
-        .select('*')
-        .eq('salon_code', salonCode)
-        .limit(1);
-
-      if (response.error) throw response.error;
-
-      if (!response.data || response.data.length === 0) {
-        throw new Error('Aucun salon trouvé pour ce salon_code.');
-      }
-
-      return response.data[0];
-    }
-
-    async function fetchEventsBySalonId(salonId) {
-      const response = await supabase
-        .from('events')
-        .select('*')
-        .eq('salon_id', salonId)
-        .order('created_at', { ascending: true });
-
-      if (response.error) throw response.error;
-      return response.data || [];
-    }
-
-    async function fetchReviewHistoryBySalonId(salonId) {
-      const response = await supabase
-        .from('review_history')
-        .select('*')
-        .eq('salon_id', salonId)
-        .order('captured_at', { ascending: true });
-
-      if (response.error) throw response.error;
-      return response.data || [];
-    }
-
     function renderHeader(salon) {
       document.getElementById('pageSubtitle').textContent = `Salon chargé : ${salon.salon_code}`;
       document.getElementById('salonName').textContent = safeText(salon.name, 'Salon sans nom');
@@ -710,43 +570,45 @@
 
       document.getElementById('miniSalonCode').textContent = safeText(salon.salon_code, '-');
       document.getElementById('miniCity').textContent = safeText(salon.city, '-');
-      document.getElementById('miniPeriod').textContent = getPeriodLabel(currentPeriod);
+      document.getElementById('miniStatus').textContent = salon.is_active ? 'ACTIF' : 'OFF';
     }
 
-    function renderKpis(salon, periodEvents, periodReviews, fullReviews, stats) {
+    function renderKpis(salon, events, reviewHistory, stats) {
       const currentReviewCount =
-        fullReviews.length > 0
-          ? getReviewCount(fullReviews[fullReviews.length - 1])
+        reviewHistory.length > 0
+          ? getReviewCount(reviewHistory[reviewHistory.length - 1])
           : Number(salon.google_review_count || 0);
 
       let reviewDelta = 0;
-      if (periodReviews.length >= 2) {
-        reviewDelta = getReviewCount(periodReviews[periodReviews.length - 1]) - getReviewCount(periodReviews[0]);
+      if (reviewHistory.length >= 2) {
+        reviewDelta =
+          getReviewCount(reviewHistory[reviewHistory.length - 1]) -
+          getReviewCount(reviewHistory[reviewHistory.length - 2]);
       }
 
       document.getElementById('kpiReviews').textContent = currentReviewCount;
       document.getElementById('kpiReviewsSub').textContent =
-        fullReviews.length > 0
-          ? `Dernière mise à jour : ${formatDateTime(getReviewDate(fullReviews[fullReviews.length - 1]))}`
+        reviewHistory.length > 0
+          ? `Mis à jour le ${formatDateTime(getReviewDate(reviewHistory[reviewHistory.length - 1]))}`
           : 'Aucune ligne review_history trouvée';
 
       document.getElementById('kpiReviewDelta').textContent = reviewDelta >= 0 ? `+${reviewDelta}` : String(reviewDelta);
       document.getElementById('kpiReviewDeltaSub').textContent =
-        periodReviews.length >= 2
-          ? `Évolution sur ${getPeriodLabel(currentPeriod).toLowerCase()}`
-          : `Pas assez d’historique sur ${getPeriodLabel(currentPeriod).toLowerCase()}`;
+        reviewHistory.length >= 2
+          ? 'Comparaison avec le point précédent'
+          : 'Pas assez d’historique pour comparer';
 
-      document.getElementById('kpiEvents').textContent = periodEvents.length;
+      document.getElementById('kpiEvents').textContent = events.length;
       document.getElementById('kpiEventsSub').textContent =
-        periodEvents.length > 0
-          ? `Events sur ${getPeriodLabel(currentPeriod).toLowerCase()}`
-          : `Aucun event sur ${getPeriodLabel(currentPeriod).toLowerCase()}`;
+        events.length > 0
+          ? `Dernier event : ${formatDateTime(getEventDate(events[events.length - 1]))}`
+          : 'Aucun event trouvé';
 
       document.getElementById('kpiNegative').textContent = stats.sad;
       document.getElementById('kpiNegativeSub').textContent =
         stats.sad > 0
-          ? `Retours négatifs sur ${getPeriodLabel(currentPeriod).toLowerCase()}`
-          : `Aucun retour négatif sur ${getPeriodLabel(currentPeriod).toLowerCase()}`;
+          ? 'Des retours insatisfaits existent'
+          : 'Aucun retour négatif détecté';
     }
 
     function renderSatisfaction(stats) {
@@ -759,18 +621,15 @@
       document.getElementById('sadPct').textContent = stats.sadPct + '%';
     }
 
-    function renderReviewsChart(periodReviews, salon, fullReviews) {
+    function renderReviewsChart(reviewHistory, salon) {
       const labels = [];
       const values = [];
 
-      if (periodReviews.length > 0) {
-        periodReviews.forEach(row => {
+      if (reviewHistory.length > 0) {
+        reviewHistory.forEach(row => {
           labels.push(formatDate(getReviewDate(row)));
           values.push(getReviewCount(row));
         });
-      } else if (fullReviews.length > 0) {
-        labels.push(formatDate(getReviewDate(fullReviews[fullReviews.length - 1])));
-        values.push(getReviewCount(fullReviews[fullReviews.length - 1]));
       } else if (salon.google_review_count !== null && salon.google_review_count !== undefined) {
         labels.push('Valeur actuelle');
         values.push(Number(salon.google_review_count) || 0);
@@ -820,13 +679,13 @@
       });
     }
 
-    function renderActivity(periodEvents) {
+    function renderActivity(events) {
       const container = document.getElementById('activityList');
       container.innerHTML = '';
 
       const activityMap = {};
 
-      periodEvents.forEach(row => {
+      events.forEach(row => {
         const dateKey = formatDate(getEventDate(row));
         activityMap[dateKey] = (activityMap[dateKey] || 0) + 1;
       });
@@ -838,7 +697,7 @@
           <div class="list-item">
             <div class="left">
               <div class="title">Aucune activité</div>
-              <div class="subtitle">Aucun event sur ${getPeriodLabel(currentPeriod).toLowerCase()}</div>
+              <div class="subtitle">Aucun event enregistré pour ce salon</div>
             </div>
             <div class="right">0</div>
           </div>
@@ -852,7 +711,7 @@
         item.innerHTML = `
           <div class="left">
             <div class="title">${date}</div>
-            <div class="subtitle">Nombre d’events enregistrés</div>
+            <div class="subtitle">Nombre d’events enregistrés ce jour-là</div>
           </div>
           <div class="right">${count}</div>
         `;
@@ -860,37 +719,27 @@
       });
     }
 
-    function renderSummary(salon, periodEvents, periodReviews, fullReviews, stats) {
+    function renderSummary(salon, events, reviewHistory, stats) {
       const container = document.getElementById('summaryList');
       container.innerHTML = '';
 
       const currentReviews =
-        fullReviews.length > 0
-          ? getReviewCount(fullReviews[fullReviews.length - 1])
+        reviewHistory.length > 0
+          ? getReviewCount(reviewHistory[reviewHistory.length - 1])
           : Number(salon.google_review_count || 0);
-
-      const reviewDelta =
-        periodReviews.length >= 2
-          ? getReviewCount(periodReviews[periodReviews.length - 1]) - getReviewCount(periodReviews[0])
-          : 0;
 
       const items = [
         {
           title: 'Performance avis',
           subtitle: currentReviews > 0
-            ? `${currentReviews} avis Google au total`
+            ? `${currentReviews} avis Google actuellement enregistrés`
             : 'Aucun compteur d’avis exploitable pour le moment',
           value: currentReviews
         },
         {
-          title: 'Tendance période',
-          subtitle: `Variation des avis sur ${getPeriodLabel(currentPeriod).toLowerCase()}`,
-          value: (reviewDelta >= 0 ? '+' : '') + reviewDelta
-        },
-        {
           title: 'Satisfaction globale',
           subtitle: stats.total > 0
-            ? `${stats.happyPct}% des interactions sont positives sur la période`
+            ? `${stats.happyPct}% des interactions sont positives`
             : 'Pas encore assez de données exploitables',
           value: stats.happyPct + '%'
         },
@@ -917,59 +766,128 @@
       });
     }
 
-    function renderDashboardForPeriod() {
-      if (!salonData) return;
-
-      const periodEvents = filterEventsByPeriod(allEvents, currentPeriod);
-      const periodReviews = filterReviewsByPeriod(allReviewHistory, currentPeriod);
-      const stats = computeStats(periodEvents);
-
-      renderHeader(salonData);
-      renderKpis(salonData, periodEvents, periodReviews, allReviewHistory, stats);
-      renderSatisfaction(stats);
-      renderReviewsChart(periodReviews, salonData, allReviewHistory);
-      renderActivity(periodEvents);
-      renderSummary(salonData, periodEvents, periodReviews, allReviewHistory, stats);
-    }
-
-    function setupPeriodButtons() {
-      const buttons = document.querySelectorAll('.period-btn');
-
-      buttons.forEach(button => {
-        button.addEventListener('click', function () {
-          buttons.forEach(btn => btn.classList.remove('active'));
-          this.classList.add('active');
-          currentPeriod = this.dataset.period;
-          renderDashboardForPeriod();
-        });
-      });
-    }
-
     async function loadDashboard() {
       try {
+        log('1. Début loadDashboard');
+        document.getElementById('pageSubtitle').textContent = 'Lecture du paramètre URL...';
+
         const params = new URLSearchParams(window.location.search);
         const salonCode = params.get('salon');
+        log('2. Paramètre salon', { salonCode });
 
         if (!salonCode) {
           showError("Paramètre manquant dans l’URL. Exemple : ?salon=CHELLES_TEST");
           return;
         }
 
-        salonData = await fetchSalonByCode(salonCode);
-        allEvents = await fetchEventsBySalonId(salonData.id);
-        allReviewHistory = await fetchReviewHistoryBySalonId(salonData.id);
+        document.getElementById('pageSubtitle').textContent = 'Création client Supabase...';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        log('3. Client Supabase créé');
 
-        renderDashboardForPeriod();
+        document.getElementById('pageSubtitle').textContent = 'Lecture table salons...';
+        const salonResponse = await supabase
+          .from('salons')
+          .select('*')
+          .eq('salon_code', salonCode)
+          .limit(1);
+
+        log('4. Réponse salons', salonResponse);
+
+        if (salonResponse.error) {
+          throw salonResponse.error;
+        }
+
+        if (!salonResponse.data || salonResponse.data.length === 0) {
+          throw new Error('Aucun salon trouvé pour ce salon_code.');
+        }
+
+        const salon = salonResponse.data[0];
+        renderHeader(salon);
+        log('5. Salon trouvé', salon);
+
+        document.getElementById('pageSubtitle').textContent = 'Lecture table events...';
+        const eventsResponse = await supabase
+          .from('events')
+          .select('*')
+          .eq('salon_id', salon.id)
+          .order('created_at', { ascending: true });
+
+        log('6. Réponse events', {
+          error: eventsResponse.error,
+          count: eventsResponse.data ? eventsResponse.data.length : 0
+        });
+
+        if (eventsResponse.error) {
+          throw eventsResponse.error;
+        }
+
+        const events = eventsResponse.data || [];
+
+        document.getElementById('pageSubtitle').textContent = 'Lecture review_history...';
+        const reviewResponse = await supabase
+          .from('review_history')
+          .select('*')
+          .eq('salon_id', salon.id)
+          .order('captured_at', { ascending: true });
+
+        log('7. Réponse review_history', {
+          error: reviewResponse.error,
+          count: reviewResponse.data ? reviewResponse.data.length : 0
+        });
+
+        if (reviewResponse.error) {
+          throw reviewResponse.error;
+        }
+
+        const reviewHistory = reviewResponse.data || [];
+        const stats = computeStats(events);
+
+        log('8. Stats calculées', stats);
+
+        renderKpis(salon, events, reviewHistory, stats);
+        log('9. KPI affichés');
+
+        renderSatisfaction(stats);
+        log('10. Satisfaction affichée');
+
+        renderReviewsChart(reviewHistory, salon);
+        log('11. Graphique affiché');
+
+        renderActivity(events);
+        log('12. Activité affichée');
+
+        renderSummary(salon, events, reviewHistory, stats);
+        log('13. Résumé affiché');
+
+        document.getElementById('pageSubtitle').textContent = `Salon chargé : ${salon.salon_code}`;
+        showSuccess('Dashboard chargé avec succès.');
       } catch (error) {
-        showError("Le dashboard n’a pas pu charger les données du salon.", {
+        showError('Le dashboard a rencontré une erreur.', {
           message: error.message || String(error),
           code: error.code || null,
-          hint: error.hint || null
+          hint: error.hint || null,
+          details: error.details || null
         });
       }
     }
 
-    setupPeriodButtons();
+    window.onerror = function(message, source, lineno, colno, error) {
+      showError('Erreur JavaScript détectée.', {
+        message,
+        source,
+        lineno,
+        colno,
+        stack: error && error.stack ? error.stack : null
+      });
+    };
+
+    window.addEventListener('unhandledrejection', function(event) {
+      showError('Promesse rejetée non gérée.', {
+        reason: event.reason && event.reason.message ? event.reason.message : event.reason,
+        stack: event.reason && event.reason.stack ? event.reason.stack : null
+      });
+    });
+
     loadDashboard();
   </script>
 </body>

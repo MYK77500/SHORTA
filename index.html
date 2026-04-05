@@ -14,8 +14,8 @@
       margin: 0;
       min-height: 100vh;
       font-family: Arial, sans-serif;
-      background: #111111;
-      color: #ffffff;
+      background: #ffffff;
+      color: #111111;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -24,7 +24,7 @@
 
     .container {
       width: 100%;
-      max-width: 900px;
+      max-width: 1000px;
       text-align: center;
     }
 
@@ -32,36 +32,36 @@
       font-size: 56px;
       font-weight: 700;
       letter-spacing: 2px;
-      margin: 0 0 12px 0;
+      margin: 0 0 16px 0;
     }
 
     .subtitle {
-      font-size: 22px;
-      color: #d1d5db;
-      margin: 0 0 38px 0;
+      font-size: 28px;
+      color: #222222;
+      margin: 0 0 50px 0;
     }
 
     .buttons {
       display: flex;
       justify-content: center;
-      gap: 24px;
+      gap: 28px;
       flex-wrap: wrap;
-      margin-bottom: 28px;
+      margin-bottom: 30px;
     }
 
     .emoji-btn {
       border: none;
       border-radius: 28px;
-      width: 180px;
-      height: 180px;
-      font-size: 76px;
+      width: 190px;
+      height: 190px;
+      font-size: 82px;
       cursor: pointer;
       transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.14);
     }
 
     .emoji-btn:hover {
-      transform: scale(1.05);
+      transform: scale(1.04);
     }
 
     .emoji-btn:active {
@@ -87,24 +87,23 @@
 
     #status {
       min-height: 28px;
-      font-size: 17px;
-      margin-top: 8px;
+      font-size: 18px;
       font-weight: 600;
+      color: #222222;
+      margin-top: 8px;
     }
 
-    .meta {
-      margin-top: 20px;
-      font-size: 13px;
-      color: #9ca3af;
-      line-height: 1.6;
+    .hidden {
+      display: none !important;
     }
 
     .error-box {
-      margin: 24px auto 0 auto;
-      max-width: 720px;
-      background: #1f1f1f;
-      border: 1px solid #333333;
-      border-radius: 16px;
+      margin: 22px auto 0 auto;
+      max-width: 760px;
+      background: #fff4f4;
+      border: 1px solid #f1b5b5;
+      color: #8a1f1f;
+      border-radius: 14px;
       padding: 16px;
       text-align: left;
       font-size: 14px;
@@ -113,23 +112,20 @@
       display: none;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
     @media (max-width: 700px) {
       .logo {
         font-size: 42px;
       }
 
       .subtitle {
-        font-size: 18px;
+        font-size: 22px;
+        margin-bottom: 36px;
       }
 
       .emoji-btn {
-        width: 140px;
-        height: 140px;
-        font-size: 60px;
+        width: 145px;
+        height: 145px;
+        font-size: 62px;
         border-radius: 22px;
       }
     }
@@ -147,12 +143,6 @@
     </div>
 
     <div id="status">Chargement...</div>
-
-    <div class="meta">
-      URL attendue : <strong>/kiosk/SALON_CODE/DEVICE_CODE</strong>
-      <br />
-      Exemple : <strong>/kiosk/CHELLES_TEST/TAB01</strong>
-    </div>
 
     <div id="errorBox" class="error-box"></div>
   </div>
@@ -205,9 +195,7 @@
       const parts = path.split('/').filter(Boolean)
 
       if (parts.length !== 3 || parts[0] !== 'kiosk') {
-        throw new Error(
-          'URL invalide.\n\nUtilise une URL au format :\n/kiosk/SALON_CODE/DEVICE_CODE\n\nExemple :\n/kiosk/CHELLES_TEST/TAB01'
-        )
+        throw new Error('URL invalide pour la borne.')
       }
 
       return {
@@ -256,13 +244,11 @@
     async function boot() {
       try {
         hideError()
-        setStatus('Vérification du lien...')
+        setStatus('Chargement...')
 
         const { salonCode, deviceCode } = parseKioskUrl()
         currentSalonCode = salonCode
         currentDeviceCode = deviceCode
-
-        setStatus('Connexion au salon...')
 
         const salon = await fetchSalonByCode(salonCode)
         const device = await fetchDeviceByCode(salon.id, deviceCode)
@@ -271,22 +257,22 @@
         currentDevice = device
 
         showButtons()
-        setStatus('Prêt')
+        setStatus('')
       } catch (error) {
-        setStatus('Erreur de configuration')
+        setStatus('Erreur')
         showError(error.message)
       }
     }
 
     async function sendEvent(value) {
       if (!currentSalon || !currentDevice) {
-        setStatus('Configuration incomplète')
+        setStatus('Erreur')
         showError('Impossible d’envoyer l’événement : salon ou device non chargé.')
         return
       }
 
       hideError()
-      setStatus('Envoi en cours...')
+      setStatus('Envoi...')
       setButtonsDisabled(true)
 
       try {
@@ -316,29 +302,8 @@
         }
 
         setStatus('Merci pour votre retour')
-
-        if (value === 'happy') {
-          setTimeout(() => {
-            window.location.href = '/avis.html'
-          }, 700)
-          return
-        }
-
-        if (value === 'neutral') {
-          setTimeout(() => {
-            window.location.href = '/feedback-attente.html'
-          }, 700)
-          return
-        }
-
-        if (value === 'sad') {
-          setTimeout(() => {
-            window.location.href = '/feedback-resultat.html'
-          }, 700)
-          return
-        }
       } catch (error) {
-        setStatus('Erreur lors de l’envoi')
+        setStatus('Erreur')
         showError('Erreur Supabase : ' + error.message)
       } finally {
         setButtonsDisabled(false)
@@ -356,3 +321,4 @@
   </script>
 </body>
 </html>
+

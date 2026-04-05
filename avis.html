@@ -1,54 +1,421 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SHORTA - Avis</title>
-  <link rel="stylesheet" href="style.css">
 
-  <!-- GOOGLE ANALYTICS -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V5KGDWV0FV"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-V5KGDWV0FV');
-  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-  <script>
-    setTimeout(function () {
-      window.location.href = "index.html";
-    }, 60000);
-  </script>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      color: #111111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      text-align: center;
+    }
+
+    .logo {
+      position: absolute;
+      top: 24px;
+      left: 28px;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .title {
+      font-size: 56px;
+      font-weight: 800;
+      margin: 0 0 12px 0;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      font-size: 24px;
+      color: #444444;
+      margin: 0 0 34px 0;
+      line-height: 1.35;
+    }
+
+    .qr-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .qr-box {
+      background: #ffffff;
+      border: 6px solid #111111;
+      border-radius: 22px;
+      padding: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 300px;
+      min-height: 300px;
+    }
+
+    #qrImage {
+      width: 260px;
+      height: 260px;
+      object-fit: contain;
+      display: none;
+    }
+
+    .qr-loading {
+      font-size: 18px;
+      color: #555555;
+    }
+
+    .phone-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 12px;
+      background: #000000;
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 18px 34px;
+      font-size: 26px;
+      font-weight: 600;
+      min-width: 300px;
+    }
+
+    .phone-icon {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .scan-text {
+      margin-top: 18px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #2b2b2b;
+    }
+
+    .tablet-btn {
+      margin-top: 28px;
+      border: none;
+      background: #000000;
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 22px 38px;
+      font-size: 26px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .tablet-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .tablet-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #status {
+      min-height: 24px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #222222;
+      margin-top: 18px;
+    }
+
+    .error-box {
+      display: none;
+      max-width: 760px;
+      margin: 20px auto 0 auto;
+      background: #fff4f4;
+      border: 1px solid #f1b5b5;
+      color: #8a1f1f;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: left;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    @media (max-width: 700px) {
+      .logo {
+        position: static;
+        margin-bottom: 20px;
+        text-align: left;
+      }
+
+      .title {
+        font-size: 40px;
+      }
+
+      .subtitle {
+        font-size: 20px;
+      }
+
+      .qr-box {
+        min-width: 240px;
+        min-height: 240px;
+        padding: 12px;
+      }
+
+      #qrImage {
+        width: 210px;
+        height: 210px;
+      }
+
+      .phone-pill {
+        font-size: 22px;
+        min-width: auto;
+        width: 100%;
+        max-width: 340px;
+      }
+
+      .scan-text {
+        font-size: 24px;
+      }
+
+      .tablet-btn {
+        font-size: 22px;
+        width: 100%;
+        max-width: 420px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div class="logo">SHORTA</div>
 
-<div class="page page-avis">
-
-  <div class="logo">SHORTA</div>
-
-  <div class="avis-content">
     <h1 class="title">Merci beaucoup 🙏</h1>
-
     <p class="subtitle">
       Votre avis compte beaucoup pour nous et nous aiderait énormément ⭐
     </p>
 
-    <div class="qr-box large">
-      <img src="qrcode.png">
+    <div class="qr-wrap">
+      <div class="qr-box">
+        <img id="qrImage" alt="QR code pour laisser un avis Google" />
+        <div id="qrLoading" class="qr-loading">Chargement du QR code...</div>
+      </div>
     </div>
 
-    <div class="helper-text qr-text">
-      Scannez avec votre téléphone
+    <div class="phone-pill">
+      <span class="phone-icon">📱</span>
+      <span>Scannez moi</span>
     </div>
 
-    <a href="https://bit.ly/4bXzstm" class="primary-button">
-      Laisser mon avis sur cette tablette
-    </a>
+    <div class="scan-text">Scannez avec votre téléphone</div>
+
+    <button id="tabletBtn" class="tablet-btn">Laisser mon avis sur cette tablette</button>
+
+    <div id="status"></div>
+    <div id="errorBox" class="error-box"></div>
   </div>
 
-</div>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+    const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co'
+    const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu'
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    const qrImageEl = document.getElementById('qrImage')
+    const qrLoadingEl = document.getElementById('qrLoading')
+    const tabletBtnEl = document.getElementById('tabletBtn')
+    const statusEl = document.getElementById('status')
+    const errorBoxEl = document.getElementById('errorBox')
+
+    let currentSalon = null
+    let currentDevice = null
+    let currentSalonCode = null
+    let currentDeviceCode = null
+    let currentGoogleReviewUrl = null
+
+    function setStatus(message) {
+      statusEl.textContent = message
+    }
+
+    function showError(message) {
+      errorBoxEl.style.display = 'block'
+      errorBoxEl.textContent = message
+      console.error(message)
+    }
+
+    function hideError() {
+      errorBoxEl.style.display = 'none'
+      errorBoxEl.textContent = ''
+    }
+
+    function getQueryParams() {
+      const params = new URLSearchParams(window.location.search)
+      const salonCode = params.get('salon_code')
+      const deviceCode = params.get('device_code')
+
+      if (!salonCode || !deviceCode) {
+        throw new Error('Paramètres manquants : salon_code et device_code sont requis.')
+      }
+
+      return { salonCode, deviceCode }
+    }
+
+    async function fetchSalonByCode(salonCode) {
+      const { data, error } = await supabase
+        .from('salons')
+        .select('id, salon_code, name, city, is_active, google_review_url')
+        .eq('salon_code', salonCode)
+        .single()
+
+      if (error) {
+        throw new Error('Salon introuvable : ' + error.message)
+      }
+
+      if (!data.is_active) {
+        throw new Error('Ce salon est désactivé.')
+      }
+
+      if (!data.google_review_url) {
+        throw new Error('Aucun lien Google avis n’est configuré pour ce salon.')
+      }
+
+      return data
+    }
+
+    async function fetchDeviceByCode(salonId, deviceCode) {
+      const { data, error } = await supabase
+        .from('devices')
+        .select('id, device_code, label, is_active')
+        .eq('salon_id', salonId)
+        .eq('device_code', deviceCode)
+        .single()
+
+      if (error) {
+        throw new Error('Device introuvable : ' + error.message)
+      }
+
+      if (!data.is_active) {
+        throw new Error('Ce device est désactivé.')
+      }
+
+      return data
+    }
+
+    async function insertEvent(eventType, eventValue, payload) {
+      const { error } = await supabase
+        .from('events')
+        .insert([
+          {
+            salon_id: currentSalon.id,
+            device_id: currentDevice.id,
+            event_type: eventType,
+            event_value: eventValue,
+            payload: payload
+          }
+        ])
+
+      if (error) {
+        throw new Error(error.message)
+      }
+    }
+
+    function buildQrImageUrl(targetUrl) {
+      return 'https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=' + encodeURIComponent(targetUrl)
+    }
+
+    function showQrCode(targetUrl) {
+      qrImageEl.src = buildQrImageUrl(targetUrl)
+      qrImageEl.style.display = 'block'
+      qrLoadingEl.style.display = 'none'
+    }
+
+    async function boot() {
+      try {
+        hideError()
+        setStatus('Chargement...')
+
+        const { salonCode, deviceCode } = getQueryParams()
+        currentSalonCode = salonCode
+        currentDeviceCode = deviceCode
+
+        const salon = await fetchSalonByCode(salonCode)
+        const device = await fetchDeviceByCode(salon.id, deviceCode)
+
+        currentSalon = salon
+        currentDevice = device
+        currentGoogleReviewUrl = salon.google_review_url
+
+        showQrCode(currentGoogleReviewUrl)
+
+        await insertEvent('review_page_view', 'open', {
+          source: 'review_page',
+          salon_code: currentSalonCode,
+          device_code: currentDeviceCode,
+          google_review_url: currentGoogleReviewUrl,
+          page_path: window.location.pathname,
+          page_url: window.location.href,
+          user_agent: navigator.userAgent
+        })
+
+        await insertEvent('review_qr_displayed', 'shown', {
+          source: 'review_page',
+          salon_code: currentSalonCode,
+          device_code: currentDeviceCode,
+          google_review_url: currentGoogleReviewUrl
+        })
+
+        setStatus('')
+      } catch (error) {
+        setStatus('Erreur')
+        showError(error.message)
+        tabletBtnEl.disabled = true
+      }
+    }
+
+    async function handleTabletClick() {
+      try {
+        if (!currentSalon || !currentDevice || !currentGoogleReviewUrl) {
+          throw new Error('Configuration incomplète.')
+        }
+
+        tabletBtnEl.disabled = true
+        setStatus('Ouverture...')
+
+        await insertEvent('review_tablet_click', 'clicked', {
+          source: 'review_page',
+          salon_code: currentSalonCode,
+          device_code: currentDeviceCode,
+          google_review_url: currentGoogleReviewUrl,
+          page_path: window.location.pathname,
+          page_url: window.location.href,
+          user_agent: navigator.userAgent
+        })
+
+        window.location.href = currentGoogleReviewUrl
+      } catch (error) {
+        setStatus('Erreur')
+        showError(error.message)
+        tabletBtnEl.disabled = false
+      }
+    }
+
+    tabletBtnEl.addEventListener('click', handleTabletClick)
+
+    boot()
+  </script>
 </body>
 </html>

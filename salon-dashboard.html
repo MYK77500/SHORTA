@@ -1,843 +1,106 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SHORTA — Dashboard Salon</title>
+<meta charset="UTF-8">
+<title>SHORTA Dashboard</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #07152d;
-      --panel: #1b2943;
-      --panel-2: #101d35;
-      --text: #ffffff;
-      --muted: #9fb0d1;
-      --green: #22c55e;
-      --orange: #f59e0b;
-      --red: #ef4444;
-      --blue: #60a5fa;
-      --border: rgba(255,255,255,0.06);
-      --shadow: 0 12px 30px rgba(0,0,0,0.25);
-      --radius: 18px;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(180deg, #061327 0%, #081a36 100%);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 24px;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 22px;
-    }
-
-    .title-wrap h1 {
-      font-size: 42px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .title-wrap p {
-      color: var(--muted);
-      font-size: 16px;
-    }
-
-    .refresh-btn {
-      background: #f8fafc;
-      color: #07152d;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .hero {
-      background: var(--panel);
-      border-radius: 22px;
-      padding: 22px;
-      margin-bottom: 22px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-
-    .hero-grid {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .hero-left h2 {
-      font-size: 30px;
-      margin-bottom: 8px;
-    }
-
-    .hero-left p {
-      color: var(--muted);
-      line-height: 1.5;
-    }
-
-    .hero-right {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .mini-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px 16px;
-      min-width: 170px;
-    }
-
-    .mini-card .label {
-      color: var(--muted);
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-
-    .mini-card .value {
-      font-size: 24px;
-      font-weight: 800;
-    }
-
-    .grid-kpi {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    .card {
-      background: var(--panel);
-      border-radius: var(--radius);
-      padding: 22px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-    }
-
-    .kpi-card .label {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-
-    .kpi-card .value {
-      font-size: 36px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .kpi-card .sub {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .grid-main {
-      display: grid;
-      grid-template-columns: 1.35fr 1fr;
-      gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    .grid-bottom {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    .section-title {
-      font-size: 18px;
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .section-subtitle {
-      color: var(--muted);
-      font-size: 13px;
-      margin-bottom: 16px;
-    }
-
-    .chart-wrap {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-      height: 340px;
-    }
-
-    .chart-wrap canvas {
-      width: 100% !important;
-      height: 100% !important;
-    }
-
-    .satisfaction-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .sat-row {
-      display: grid;
-      grid-template-columns: 80px 1fr 70px;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .emoji {
-      font-size: 32px;
-      text-align: center;
-    }
-
-    .bar-wrap {
-      height: 14px;
-      background: rgba(255,255,255,0.06);
-      border-radius: 999px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-
-    .bar {
-      height: 100%;
-      border-radius: 999px;
-    }
-
-    .happy { background: var(--green); }
-    .neutral { background: var(--orange); }
-    .sad { background: var(--red); }
-
-    .sat-value {
-      text-align: right;
-      font-size: 16px;
-      font-weight: 800;
-    }
-
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .list-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-    }
-
-    .list-item .left {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .list-item .title {
-      font-weight: 700;
-      font-size: 14px;
-    }
-
-    .list-item .subtitle {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .list-item .right {
-      font-size: 22px;
-      font-weight: 800;
-    }
-
-    .alert-box {
-      display: none;
-      background: rgba(239,68,68,0.12);
-      color: #fecaca;
-      border: 1px solid rgba(239,68,68,0.35);
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 18px;
-      white-space: pre-wrap;
-    }
-
-    .footer-note {
-      margin-top: 10px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    @media (max-width: 1100px) {
-      .grid-kpi { grid-template-columns: repeat(2, 1fr); }
-      .grid-main, .grid-bottom { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 640px) {
-      body { padding: 16px; }
-      .title-wrap h1 { font-size: 32px; }
-      .grid-kpi { grid-template-columns: 1fr; }
-      .sat-row { grid-template-columns: 60px 1fr 60px; }
-    }
-  </style>
+<style>
+body { background:#0b1a2f; color:white; font-family:Arial; padding:20px; }
+.card { background:#1e2d4a; padding:20px; border-radius:10px; margin-bottom:20px; }
+.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:15px; }
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <div class="topbar">
-      <div class="title-wrap">
-        <h1>Dashboard Salon</h1>
-        <p id="pageSubtitle">Chargement du salon...</p>
-      </div>
-      <button class="refresh-btn" onclick="window.location.reload()">Actualiser</button>
-    </div>
 
-    <div id="alertBox" class="alert-box"></div>
+<h1>Dashboard Salon</h1>
 
-    <div class="hero">
-      <div class="hero-grid">
-        <div class="hero-left">
-          <h2 id="salonName">Salon</h2>
-          <p id="salonMeta">Lecture des données en cours...</p>
-        </div>
-        <div class="hero-right">
-          <div class="mini-card">
-            <div class="label">Code salon</div>
-            <div class="value" id="miniSalonCode">-</div>
-          </div>
-          <div class="mini-card">
-            <div class="label">Ville</div>
-            <div class="value" id="miniCity">-</div>
-          </div>
-          <div class="mini-card">
-            <div class="label">Statut</div>
-            <div class="value" id="miniStatus">-</div>
-          </div>
-        </div>
-      </div>
-    </div>
+<div id="kpis" class="grid"></div>
 
-    <div class="grid-kpi">
-      <div class="card kpi-card">
-        <div class="label">Avis Google actuel</div>
-        <div class="value" id="kpiReviews">0</div>
-        <div class="sub" id="kpiReviewsSub">Dernière valeur connue</div>
-      </div>
+<div class="card">
+<h2>Satisfaction</h2>
+<div id="satisfaction"></div>
+</div>
 
-      <div class="card kpi-card">
-        <div class="label">Évolution avis Google</div>
-        <div class="value" id="kpiReviewDelta">0</div>
-        <div class="sub" id="kpiReviewDeltaSub">Par rapport au point précédent</div>
-      </div>
+<script>
 
-      <div class="card kpi-card">
-        <div class="label">Nombre total d'events</div>
-        <div class="value" id="kpiEvents">0</div>
-        <div class="sub" id="kpiEventsSub">Tous événements salon</div>
-      </div>
+const supabase = window.supabase.createClient(
+'https://ooqgocqdggxcgnzhxjil.supabase.co',
+'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu'
+)
 
-      <div class="card kpi-card">
-        <div class="label">Feedbacks négatifs</div>
-        <div class="value" id="kpiNegative">0</div>
-        <div class="sub" id="kpiNegativeSub">Clients insatisfaits détectés</div>
-      </div>
-    </div>
+const salonCode = new URLSearchParams(window.location.search).get('salon')
 
-    <div class="grid-main">
-      <div class="card">
-        <div class="section-title">Évolution avis Google</div>
-        <div class="section-subtitle">Courbe construite à partir de review_history</div>
-        <div class="chart-wrap">
-          <canvas id="reviewsChart"></canvas>
-        </div>
-      </div>
+async function load(){
 
-      <div class="card">
-        <div class="section-title">Satisfaction client</div>
-        <div class="section-subtitle">Répartition des retours borne</div>
+// 1️⃣ salon
+const { data: salon } = await supabase
+.from('salons')
+.select('*')
+.eq('salon_code', salonCode)
+.single()
 
-        <div class="satisfaction-list">
-          <div class="sat-row">
-            <div class="emoji">😀</div>
-            <div class="bar-wrap"><div id="barHappy" class="bar happy" style="width:0%"></div></div>
-            <div id="happyPct" class="sat-value">0%</div>
-          </div>
+// 2️⃣ events
+const { data: events } = await supabase
+.from('events')
+.select('*')
+.eq('salon_id', salon.id)
 
-          <div class="sat-row">
-            <div class="emoji">😐</div>
-            <div class="bar-wrap"><div id="barNeutral" class="bar neutral" style="width:0%"></div></div>
-            <div id="neutralPct" class="sat-value">0%</div>
-          </div>
+// 3️⃣ review history
+const { data: reviews } = await supabase
+.from('review_history')
+.select('*')
+.eq('salon_id', salon.id)
+.order('captured_at', { ascending: true })
 
-          <div class="sat-row">
-            <div class="emoji">😞</div>
-            <div class="bar-wrap"><div id="barSad" class="bar sad" style="width:0%"></div></div>
-            <div id="sadPct" class="sat-value">0%</div>
-          </div>
-        </div>
-      </div>
-    </div>
+// 🔥 LOGIQUE CORRIGÉE
 
-    <div class="grid-bottom">
-      <div class="card">
-        <div class="section-title">Activité récente</div>
-        <div class="section-subtitle">Nombre d'events par jour</div>
-        <div id="activityList" class="list"></div>
-      </div>
+let happy = 0
+let neutral = 0
+let sad = 0
 
-      <div class="card">
-        <div class="section-title">Résumé business</div>
-        <div class="section-subtitle">Lecture rapide pour le salon</div>
-        <div id="summaryList" class="list"></div>
-      </div>
-    </div>
+events.forEach(e => {
 
-    <div class="footer-note">
-      SHORTA — Dashboard salon V1
-    </div>
-  </div>
+if(e.event_type === 'emoji_click'){
 
-  <script>
-    const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu';
+// ⚠️ ici on suppose que tu as une info quelque part
+// sinon on considère que emoji_click = happy
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+happy++
 
-    let reviewsChartInstance = null;
+}
 
-    function showError(message, details = null) {
-      const box = document.getElementById('alertBox');
-      box.style.display = 'block';
-      box.textContent = details ? message + '\n\n' + JSON.stringify(details, null, 2) : message;
-    }
+if(e.event_type === 'feedback_submit'){
+sad++
+}
 
-    function safeText(value, fallback = '-') {
-      if (value === null || value === undefined || value === '') return fallback;
-      return String(value);
-    }
+})
 
-    function formatDate(value) {
-      if (!value) return 'Date inconnue';
-      const d = new Date(value);
-      if (Number.isNaN(d.getTime())) return 'Date inconnue';
-      return d.toLocaleDateString('fr-FR');
-    }
+// KPI
+document.getElementById('kpis').innerHTML = `
+<div class="card">Avis Google<br><b>${reviews.length ? reviews[reviews.length-1].review_count : 0}</b></div>
+<div class="card">Events<br><b>${events.length}</b></div>
+<div class="card">Négatif<br><b>${sad}</b></div>
+<div class="card">Happy<br><b>${happy}</b></div>
+`
 
-    function formatDateTime(value) {
-      if (!value) return 'Date inconnue';
-      const d = new Date(value);
-      if (Number.isNaN(d.getTime())) return 'Date inconnue';
-      return d.toLocaleString('fr-FR');
-    }
+// satisfaction
+const total = happy + neutral + sad
 
-    function getReviewCount(row) {
-      const candidates = [
-        row.count,
-        row.review_count,
-        row.total_reviews,
-        row.google_reviews,
-        row.current_count,
-        row.value
-      ];
+document.getElementById('satisfaction').innerHTML = `
+😀 ${Math.round((happy/total)*100)||0}%<br>
+😐 ${Math.round((neutral/total)*100)||0}%<br>
+😞 ${Math.round((sad/total)*100)||0}%
+`
 
-      for (const candidate of candidates) {
-        if (candidate !== null && candidate !== undefined && candidate !== '') {
-          const n = Number(candidate);
-          if (!Number.isNaN(n)) return n;
-        }
-      }
+}
 
-      return 0;
-    }
+load()
 
-    function getRowDate(row) {
-      return row.created_at || row.recorded_at || row.date || row.updated_at || null;
-    }
+</script>
 
-    function normalizeSentiment(row) {
-      const values = [
-        row.type,
-        row.event_type,
-        row.sentiment,
-        row.mood,
-        row.choice,
-        row.button,
-        row.status,
-        row.action,
-        row.value,
-        row.emoji
-      ];
-
-      for (const raw of values) {
-        const v = String(raw || '').trim().toLowerCase();
-        if (!v) continue;
-
-        if (
-          v === 'happy' ||
-          v === 'positive' ||
-          v === 'green' ||
-          v === 'avis' ||
-          v === 'review' ||
-          v === '😀' ||
-          v.includes('happy')
-        ) return 'happy';
-
-        if (
-          v === 'neutral' ||
-          v === 'orange' ||
-          v === '😐' ||
-          v.includes('neutral')
-        ) return 'neutral';
-
-        if (
-          v === 'sad' ||
-          v === 'negative' ||
-          v === 'red' ||
-          v === 'feedback' ||
-          v === '😞' ||
-          v === '☹️' ||
-          v.includes('sad')
-        ) return 'sad';
-      }
-
-      return 'unknown';
-    }
-
-    async function fetchSalonByCode(salonCode) {
-      const response = await supabase
-        .from('salons')
-        .select('*')
-        .eq('salon_code', salonCode)
-        .limit(1);
-
-      if (response.error) throw response.error;
-
-      if (!response.data || response.data.length === 0) {
-        throw new Error('Aucun salon trouvé pour ce salon_code.');
-      }
-
-      return response.data[0];
-    }
-
-    async function fetchEvents(salon) {
-      const tryBySalonId = await supabase
-        .from('events')
-        .select('*')
-        .eq('salon_id', salon.id)
-        .order('created_at', { ascending: true });
-
-      if (!tryBySalonId.error) {
-        return tryBySalonId.data || [];
-      }
-
-      const tryBySalonCode = await supabase
-        .from('events')
-        .select('*')
-        .eq('salon_code', salon.salon_code)
-        .order('created_at', { ascending: true });
-
-      if (!tryBySalonCode.error) {
-        return tryBySalonCode.data || [];
-      }
-
-      throw tryBySalonId.error;
-    }
-
-    async function fetchReviewHistory(salon) {
-      const tryBySalonId = await supabase
-        .from('review_history')
-        .select('*')
-        .eq('salon_id', salon.id)
-        .order('created_at', { ascending: true });
-
-      if (!tryBySalonId.error) {
-        return tryBySalonId.data || [];
-      }
-
-      const tryBySalonCode = await supabase
-        .from('review_history')
-        .select('*')
-        .eq('salon_code', salon.salon_code)
-        .order('created_at', { ascending: true });
-
-      if (!tryBySalonCode.error) {
-        return tryBySalonCode.data || [];
-      }
-
-      throw tryBySalonId.error;
-    }
-
-    function renderHeader(salon) {
-      document.getElementById('pageSubtitle').textContent = `Salon chargé : ${salon.salon_code}`;
-      document.getElementById('salonName').textContent = safeText(salon.name, 'Salon sans nom');
-      document.getElementById('salonMeta').textContent =
-        `Ville : ${safeText(salon.city, 'Non renseignée')} • Créé le ${formatDate(salon.created_at)} • Abonnement : ${safeText(salon.subscription_status, 'non défini')}`;
-
-      document.getElementById('miniSalonCode').textContent = safeText(salon.salon_code, '-');
-      document.getElementById('miniCity').textContent = safeText(salon.city, '-');
-      document.getElementById('miniStatus').textContent = salon.is_active ? 'ACTIF' : 'OFF';
-    }
-
-    function renderKpis(salon, events, reviewHistory, sentiments) {
-      const currentReviewCount =
-        reviewHistory.length > 0
-          ? getReviewCount(reviewHistory[reviewHistory.length - 1])
-          : Number(salon.google_review_count || 0);
-
-      let reviewDelta = 0;
-      if (reviewHistory.length >= 2) {
-        reviewDelta = getReviewCount(reviewHistory[reviewHistory.length - 1]) - getReviewCount(reviewHistory[reviewHistory.length - 2]);
-      }
-
-      const sadCount = sentiments.filter(x => x === 'sad').length;
-
-      document.getElementById('kpiReviews').textContent = currentReviewCount;
-      document.getElementById('kpiReviewsSub').textContent =
-        reviewHistory.length > 0
-          ? `Mis à jour le ${formatDateTime(getRowDate(reviewHistory[reviewHistory.length - 1]))}`
-          : 'Aucune ligne review_history trouvée';
-
-      document.getElementById('kpiReviewDelta').textContent = reviewDelta >= 0 ? `+${reviewDelta}` : String(reviewDelta);
-      document.getElementById('kpiReviewDeltaSub').textContent =
-        reviewHistory.length >= 2
-          ? 'Comparaison avec le point précédent'
-          : 'Pas assez d’historique pour comparer';
-
-      document.getElementById('kpiEvents').textContent = events.length;
-      document.getElementById('kpiEventsSub').textContent =
-        events.length > 0
-          ? `Dernier event : ${formatDateTime(getRowDate(events[events.length - 1]))}`
-          : 'Aucun event trouvé';
-
-      document.getElementById('kpiNegative').textContent = sadCount;
-      document.getElementById('kpiNegativeSub').textContent =
-        sadCount > 0
-          ? 'Des retours insatisfaits existent'
-          : 'Aucun retour négatif détecté';
-    }
-
-    function renderSatisfaction(sentiments) {
-      const total = sentiments.length;
-      const happyCount = sentiments.filter(x => x === 'happy').length;
-      const neutralCount = sentiments.filter(x => x === 'neutral').length;
-      const sadCount = sentiments.filter(x => x === 'sad').length;
-
-      const happyPct = total ? Math.round((happyCount / total) * 100) : 0;
-      const neutralPct = total ? Math.round((neutralCount / total) * 100) : 0;
-      const sadPct = total ? Math.round((sadCount / total) * 100) : 0;
-
-      document.getElementById('barHappy').style.width = happyPct + '%';
-      document.getElementById('barNeutral').style.width = neutralPct + '%';
-      document.getElementById('barSad').style.width = sadPct + '%';
-
-      document.getElementById('happyPct').textContent = happyPct + '%';
-      document.getElementById('neutralPct').textContent = neutralPct + '%';
-      document.getElementById('sadPct').textContent = sadPct + '%';
-    }
-
-    function renderReviewsChart(reviewHistory, salon) {
-      const labels = [];
-      const values = [];
-
-      if (reviewHistory.length > 0) {
-        reviewHistory.forEach(row => {
-          labels.push(formatDate(getRowDate(row)));
-          values.push(getReviewCount(row));
-        });
-      } else if (salon.google_review_count !== null && salon.google_review_count !== undefined) {
-        labels.push('Valeur actuelle');
-        values.push(Number(salon.google_review_count) || 0);
-      } else {
-        labels.push('Aucune donnée');
-        values.push(0);
-      }
-
-      const ctx = document.getElementById('reviewsChart').getContext('2d');
-
-      if (reviewsChartInstance) {
-        reviewsChartInstance.destroy();
-      }
-
-      reviewsChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Avis Google',
-            data: values,
-            borderWidth: 3,
-            tension: 0.25,
-            fill: false
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { labels: { color: '#ffffff' } }
-          },
-          scales: {
-            x: {
-              ticks: { color: '#cbd5e1' },
-              grid: { color: 'rgba(255,255,255,0.06)' }
-            },
-            y: {
-              ticks: { color: '#cbd5e1' },
-              grid: { color: 'rgba(255,255,255,0.06)' },
-              beginAtZero: true
-            }
-          }
-        }
-      });
-    }
-
-    function renderActivity(events) {
-      const container = document.getElementById('activityList');
-      container.innerHTML = '';
-
-      const activityMap = {};
-
-      events.forEach(row => {
-        const dateKey = formatDate(getRowDate(row));
-        activityMap[dateKey] = (activityMap[dateKey] || 0) + 1;
-      });
-
-      const entries = Object.entries(activityMap).slice(-7).reverse();
-
-      if (entries.length === 0) {
-        container.innerHTML = `
-          <div class="list-item">
-            <div class="left">
-              <div class="title">Aucune activité</div>
-              <div class="subtitle">Aucun event enregistré pour ce salon</div>
-            </div>
-            <div class="right">0</div>
-          </div>
-        `;
-        return;
-      }
-
-      entries.forEach(([date, count]) => {
-        const item = document.createElement('div');
-        item.className = 'list-item';
-        item.innerHTML = `
-          <div class="left">
-            <div class="title">${date}</div>
-            <div class="subtitle">Nombre d’events enregistrés ce jour-là</div>
-          </div>
-          <div class="right">${count}</div>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    function renderSummary(salon, events, reviewHistory, sentiments) {
-      const container = document.getElementById('summaryList');
-      container.innerHTML = '';
-
-      const totalEvents = events.length;
-      const happyCount = sentiments.filter(x => x === 'happy').length;
-      const sadCount = sentiments.filter(x => x === 'sad').length;
-      const happyPct = totalEvents ? Math.round((happyCount / totalEvents) * 100) : 0;
-      const currentReviews =
-        reviewHistory.length > 0
-          ? getReviewCount(reviewHistory[reviewHistory.length - 1])
-          : Number(salon.google_review_count || 0);
-
-      const items = [
-        {
-          title: 'Performance avis',
-          subtitle: currentReviews > 0
-            ? `${currentReviews} avis Google actuellement enregistrés`
-            : 'Aucun compteur d’avis exploitable pour le moment',
-          value: currentReviews
-        },
-        {
-          title: 'Satisfaction globale',
-          subtitle: totalEvents > 0
-            ? `${happyPct}% des interactions sont positives`
-            : 'Pas encore assez de données borne',
-          value: happyPct + '%'
-        },
-        {
-          title: 'Risque réputation',
-          subtitle: sadCount > 0
-            ? `${sadCount} retour(s) négatif(s) à surveiller`
-            : 'Aucun signal négatif détecté',
-          value: sadCount
-        }
-      ];
-
-      items.forEach(itemData => {
-        const item = document.createElement('div');
-        item.className = 'list-item';
-        item.innerHTML = `
-          <div class="left">
-            <div class="title">${itemData.title}</div>
-            <div class="subtitle">${itemData.subtitle}</div>
-          </div>
-          <div class="right">${itemData.value}</div>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    async function loadDashboard() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const salonCode = params.get('salon');
-
-        if (!salonCode) {
-          showError("Paramètre manquant dans l’URL. Exemple : ?salon=CHELLES_TEST");
-          return;
-        }
-
-        const salon = await fetchSalonByCode(salonCode);
-        renderHeader(salon);
-
-        const events = await fetchEvents(salon);
-        const reviewHistory = await fetchReviewHistory(salon);
-
-        const sentiments = events.map(normalizeSentiment);
-
-        renderKpis(salon, events, reviewHistory, sentiments);
-        renderSatisfaction(sentiments);
-        renderReviewsChart(reviewHistory, salon);
-        renderActivity(events);
-        renderSummary(salon, events, reviewHistory, sentiments);
-      } catch (error) {
-        showError(
-          "Le dashboard n’a pas pu charger les données du salon.",
-          {
-            message: error.message || String(error),
-            code: error.code || null,
-            hint: error.hint || null
-          }
-        );
-      }
-    }
-
-    loadDashboard();
-  </script>
 </body>
 </html>

@@ -1,37 +1,372 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SHORTA - Feedback</title>
-  <link rel="stylesheet" href="style.css">
 
-  <!-- GOOGLE ANALYTICS -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V5KGDWV0FV"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-V5KGDWV0FV');
-  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #ffffff;
+      color: #111111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 820px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 52px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin: 0 0 14px 0;
+    }
+
+    .subtitle {
+      font-size: 26px;
+      color: #222222;
+      margin: 0 0 30px 0;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #222222;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      border: 1px solid #d1d5db;
+      border-radius: 16px;
+      padding: 16px;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #9ca3af;
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .submit-btn {
+      border: none;
+      border-radius: 16px;
+      padding: 16px 28px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #111111;
+      color: #ffffff;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #status {
+      min-height: 24px;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 18px;
+      color: #222222;
+    }
+
+    .success-box {
+      display: none;
+      margin-top: 18px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .error-box {
+      display: none;
+      margin-top: 18px;
+      background: #fff4f4;
+      border: 1px solid #f1b5b5;
+      color: #8a1f1f;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: left;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    @media (max-width: 700px) {
+      .logo {
+        font-size: 40px;
+      }
+
+      .subtitle {
+        font-size: 22px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div class="logo">SHORTA</div>
+    <p class="subtitle">Que pouvons-nous améliorer ?</p>
 
-<div class="page">
-  <div class="logo">SHORTA</div>
+    <div class="card" id="formCard">
+      <label for="feedbackMessage">Votre retour</label>
+      <textarea
+        id="feedbackMessage"
+        placeholder="Expliquez-nous en quelques mots ce qui n’a pas été satisfaisant..."
+      ></textarea>
 
-  <h1 class="title">Merci pour votre retour 🙏</h1>
-  <p class="subtitle">Qu’est-ce qui peut être amélioré ?</p>
+      <div class="actions">
+        <button id="submitBtn" class="submit-btn">Envoyer</button>
+      </div>
 
-  <div class="feedback-box">
-    <a href="feedback-attente.html" class="feedback-link">Temps d’attente</a>
-    <a href="feedback-resultat.html" class="feedback-link">Résultat</a>
-    <a href="feedback-accueil.html" class="feedback-link">Accueil</a>
-    <a href="feedback-autre.html" class="feedback-link">Autre</a>
+      <div id="status"></div>
+      <div id="successBox" class="success-box">Merci, votre retour a bien été envoyé.</div>
+      <div id="errorBox" class="error-box"></div>
+    </div>
   </div>
 
-</div>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+    const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co'
+    const SUPABASE_ANON_KEY = 'COLLE_ICI_TA_ANON_KEY'
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    const textareaEl = document.getElementById('feedbackMessage')
+    const submitBtnEl = document.getElementById('submitBtn')
+    const statusEl = document.getElementById('status')
+    const successBoxEl = document.getElementById('successBox')
+    const errorBoxEl = document.getElementById('errorBox')
+
+    let currentSalon = null
+    let currentDevice = null
+    let currentSalonCode = null
+    let currentDeviceCode = null
+
+    function setStatus(message) {
+      statusEl.textContent = message
+    }
+
+    function showError(message) {
+      errorBoxEl.style.display = 'block'
+      errorBoxEl.textContent = message
+      console.error(message)
+    }
+
+    function hideError() {
+      errorBoxEl.style.display = 'none'
+      errorBoxEl.textContent = ''
+    }
+
+    function showSuccess(message) {
+      successBoxEl.style.display = 'block'
+      successBoxEl.textContent = message
+    }
+
+    function hideSuccess() {
+      successBoxEl.style.display = 'none'
+      successBoxEl.textContent = ''
+    }
+
+    function getQueryParams() {
+      const params = new URLSearchParams(window.location.search)
+      const salonCode = params.get('salon_code')
+      const deviceCode = params.get('device_code')
+
+      if (!salonCode || !deviceCode) {
+        throw new Error('Paramètres manquants : salon_code et device_code sont requis.')
+      }
+
+      return { salonCode, deviceCode }
+    }
+
+    async function fetchSalonByCode(salonCode) {
+      const { data, error } = await supabase
+        .from('salons')
+        .select('id, salon_code, name, city, is_active')
+        .eq('salon_code', salonCode)
+        .single()
+
+      if (error) {
+        throw new Error('Salon introuvable : ' + error.message)
+      }
+
+      if (!data.is_active) {
+        throw new Error('Ce salon est désactivé.')
+      }
+
+      return data
+    }
+
+    async function fetchDeviceByCode(salonId, deviceCode) {
+      const { data, error } = await supabase
+        .from('devices')
+        .select('id, device_code, label, is_active')
+        .eq('salon_id', salonId)
+        .eq('device_code', deviceCode)
+        .single()
+
+      if (error) {
+        throw new Error('Device introuvable : ' + error.message)
+      }
+
+      if (!data.is_active) {
+        throw new Error('Ce device est désactivé.')
+      }
+
+      return data
+    }
+
+    async function insertEvent(eventType, eventValue, payload) {
+      const { error } = await supabase
+        .from('events')
+        .insert([
+          {
+            salon_id: currentSalon.id,
+            device_id: currentDevice.id,
+            event_type: eventType,
+            event_value: eventValue,
+            payload: payload
+          }
+        ])
+
+      if (error) {
+        throw new Error(error.message)
+      }
+    }
+
+    async function boot() {
+      try {
+        hideError()
+        hideSuccess()
+        setStatus('Chargement...')
+
+        const { salonCode, deviceCode } = getQueryParams()
+        currentSalonCode = salonCode
+        currentDeviceCode = deviceCode
+
+        const salon = await fetchSalonByCode(salonCode)
+        const device = await fetchDeviceByCode(salon.id, deviceCode)
+
+        currentSalon = salon
+        currentDevice = device
+
+        await insertEvent('feedback_view', 'open', {
+          source: 'feedback_page',
+          salon_code: currentSalonCode,
+          device_code: currentDeviceCode,
+          page_path: window.location.pathname,
+          page_url: window.location.href,
+          user_agent: navigator.userAgent
+        })
+
+        setStatus('')
+      } catch (error) {
+        setStatus('Erreur')
+        showError(error.message)
+        submitBtnEl.disabled = true
+        textareaEl.disabled = true
+      }
+    }
+
+    async function submitFeedback() {
+      const message = textareaEl.value.trim()
+
+      hideError()
+      hideSuccess()
+
+      if (!message) {
+        showError('Merci de saisir un message avant d’envoyer.')
+        return
+      }
+
+      if (!currentSalon || !currentDevice) {
+        showError('Configuration incomplète.')
+        return
+      }
+
+      submitBtnEl.disabled = true
+      textareaEl.disabled = true
+      setStatus('Envoi...')
+
+      try {
+        await insertEvent('feedback_submit', 'submitted', {
+          source: 'feedback_page',
+          salon_code: currentSalonCode,
+          device_code: currentDeviceCode,
+          message: message,
+          page_path: window.location.pathname,
+          page_url: window.location.href,
+          user_agent: navigator.userAgent
+        })
+
+        setStatus('')
+        showSuccess('Merci, votre retour a bien été envoyé.')
+
+        setTimeout(() => {
+          window.location.href = '/kiosk/' + encodeURIComponent(currentSalonCode) + '/' + encodeURIComponent(currentDeviceCode)
+        }, 2500)
+      } catch (error) {
+        setStatus('Erreur')
+        showError('Erreur Supabase : ' + error.message)
+        submitBtnEl.disabled = false
+        textareaEl.disabled = false
+      }
+    }
+
+    submitBtnEl.addEventListener('click', submitFeedback)
+
+    boot()
+  </script>
 </body>
 </html>

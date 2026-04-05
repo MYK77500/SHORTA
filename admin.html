@@ -1,117 +1,1212 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>SHORTA Admin</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SHORTA Admin</title>
 
-<style>
-body { font-family: Arial; background:#f5f5f5; margin:0; padding:20px; }
-h1 { margin-bottom:20px; }
-button { cursor:pointer; }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-.card { background:white; padding:20px; border-radius:12px; margin-bottom:20px; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f7f8;
+      color: #111111;
+    }
 
-input { width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd; }
+    .page {
+      max-width: 1450px;
+      margin: 0 auto;
+      padding: 24px;
+    }
 
-.btn { background:black; color:white; padding:12px 16px; border:none; border-radius:10px; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
 
-.salon { background:white; padding:15px; border-radius:10px; margin-bottom:10px; }
-</style>
+    .brand {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .topbar-right {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .refresh-btn {
+      border: none;
+      background: #111111;
+      color: #ffffff;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .search-input {
+      width: 320px;
+      max-width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      background: #ffffff;
+    }
+
+    .grid-top {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .panel {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .panel-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 0 0 16px 0;
+    }
+
+    .panel-subtitle {
+      font-size: 14px;
+      color: #6b7280;
+      margin: 0 0 18px 0;
+      line-height: 1.5;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    .text-input,
+    .select-input {
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      background: #ffffff;
+    }
+
+    .form-actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #111111;
+    }
+
+    .create-status {
+      min-height: 22px;
+      font-size: 14px;
+      margin-top: 12px;
+      color: #374151;
+    }
+
+    .create-result {
+      display: none;
+      margin-top: 14px;
+      border: 1px solid #d9eadf;
+      background: #f3fcf6;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .result-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #166534;
+    }
+
+    .result-line {
+      font-size: 14px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .result-link-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .result-link-input {
+      flex: 1 1 360px;
+      min-width: 220px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      background: #ffffff;
+    }
+
+    .result-qr-wrap {
+      margin-top: 14px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .result-qr-box {
+      border: 1px solid #d1d5db;
+      border-radius: 16px;
+      padding: 10px;
+      background: #ffffff;
+    }
+
+    .result-qr-box img {
+      width: 170px;
+      height: 170px;
+      display: block;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+    }
+
+    .kpi-label {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .kpi-value {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .status-bar {
+      min-height: 22px;
+      font-size: 14px;
+      color: #374151;
+      margin-bottom: 16px;
+    }
+
+    .error-box {
+      display: none;
+      background: #fff4f4;
+      border: 1px solid #f1b5b5;
+      color: #8a1f1f;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 14px;
+    }
+
+    .salons-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .salon-card {
+      border: 1px solid #ececec;
+      border-radius: 18px;
+      padding: 18px;
+      background: #ffffff;
+    }
+
+    .salon-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .salon-main {
+      flex: 1 1 420px;
+      min-width: 280px;
+    }
+
+    .salon-name {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .salon-meta {
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .badge-trial {
+      background: #fff7ed;
+      color: #9a3412;
+    }
+
+    .badge-active {
+      background: #ecfdf5;
+      color: #166534;
+    }
+
+    .badge-suspended {
+      background: #fef2f2;
+      color: #991b1b;
+    }
+
+    .badge-default {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .salon-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 12px;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .mini-stat {
+      background: #f9fafb;
+      border: 1px solid #eceff3;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .mini-stat-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+
+    .mini-stat-value {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .salon-actions {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .action-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 16px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .details {
+      display: none;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid #ececec;
+    }
+
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 18px;
+    }
+
+    .detail-box {
+      background: #fafafa;
+      border: 1px solid #ececec;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .detail-title {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .detail-line {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #222222;
+      word-break: break-word;
+    }
+
+    .device-item,
+    .event-item {
+      border-top: 1px solid #ececec;
+      padding: 10px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .device-item:first-child,
+    .event-item:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .muted {
+      color: #6b7280;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 36px 12px;
+      color: #6b7280;
+      font-size: 15px;
+    }
+
+    .link-box {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .link-input {
+      flex: 1 1 420px;
+      min-width: 240px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 14px;
+      background: #ffffff;
+    }
+
+    .mini-qr {
+      margin-top: 12px;
+      display: inline-block;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 8px;
+      background: #ffffff;
+    }
+
+    .mini-qr img {
+      width: 120px;
+      height: 120px;
+      display: block;
+    }
+
+    @media (max-width: 1150px) {
+      .grid-top {
+        grid-template-columns: 1fr;
+      }
+
+      .kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .kpis {
+        grid-template-columns: 1fr;
+      }
+
+      .salon-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        max-width: none;
+      }
+
+      .brand {
+        font-size: 28px;
+      }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">SHORTA Admin</div>
 
-<h1>SHORTA Admin</h1>
-
-<div class="card">
-  <h2>Créer un salon</h2>
-
-  <input id="name" placeholder="Nom du salon">
-  <input id="city" placeholder="Ville">
-  <input id="google_url" placeholder="Lien Google avis">
-
-  <button class="btn" onclick="createSalon()">Créer</button>
-
-  <p id="result"></p>
-</div>
-
-<div class="card">
-  <h2>Salons</h2>
-  <div id="list"></div>
-</div>
-
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
-const supabase = createClient(
-  'https://ooqgocqdggxcgnzhxjil.supabase.co',
-  'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu'
-)
-
-window.createSalon = async () => {
-
-  const name = document.getElementById('name').value
-  const city = document.getElementById('city').value
-  const google = document.getElementById('google_url').value
-
-  if(!name || !city || !google){
-    alert("Remplis tous les champs")
-    return
-  }
-
-  const salon_code = name.toUpperCase().replace(/ /g,'_') + "_" + Math.floor(Math.random()*1000)
-
-  // CREATE SALON
-  const { data: salon, error } = await supabase
-    .from('salons')
-    .insert([{
-      name,
-      city,
-      salon_code,
-      google_review_url: google,
-      is_active: true
-    }])
-    .select()
-    .single()
-
-  if(error){
-    alert(error.message)
-    return
-  }
-
-  // CREATE DEVICE
-  await supabase.from('devices').insert([{
-    salon_id: salon.id,
-    device_code: 'TAB01',
-    label: 'Tablette 1',
-    is_active: true
-  }])
-
-  const link = `https://shorta-339p.vercel.app/kiosk/${salon_code}/TAB01`
-
-  document.getElementById('result').innerHTML = `
-    ✅ Salon créé<br><br>
-    👉 Lien borne :<br>
-    <b>${link}</b>
-  `
-
-  loadSalons()
-}
-
-async function loadSalons(){
-  const { data } = await supabase.from('salons').select('*').order('created_at',{ascending:false})
-
-  document.getElementById('list').innerHTML = data.map(s => `
-    <div class="salon">
-      <b>${s.name}</b><br>
-      ${s.city}<br>
-      ${s.salon_code}
+      <div class="topbar-right">
+        <input
+          id="searchInput"
+          class="search-input"
+          type="text"
+          placeholder="Rechercher un salon, une ville, un code..."
+        />
+        <button id="refreshBtn" class="refresh-btn">Rafraîchir</button>
+      </div>
     </div>
-  `).join('')
-}
 
-loadSalons()
-</script>
+    <div class="grid-top">
+      <div class="panel">
+        <h2 class="panel-title">Créer un salon</h2>
+        <p class="panel-subtitle">
+          Remplis les informations principales. SHORTA génère automatiquement le code salon, le slug, le device TAB01, le lien borne et le QR code borne.
+        </p>
 
+        <div class="form-grid">
+          <div>
+            <label class="field-label" for="nameInput">Nom du salon</label>
+            <input id="nameInput" class="text-input" type="text" placeholder="Ex : Salon Le Raincy" />
+          </div>
+
+          <div>
+            <label class="field-label" for="cityInput">Ville</label>
+            <input id="cityInput" class="text-input" type="text" placeholder="Ex : Le Raincy" />
+          </div>
+
+          <div>
+            <label class="field-label" for="addressInput">Adresse</label>
+            <input id="addressInput" class="text-input" type="text" placeholder="Ex : 12 avenue ..." />
+          </div>
+
+          <div>
+            <label class="field-label" for="phoneInput">Téléphone</label>
+            <input id="phoneInput" class="text-input" type="text" placeholder="Ex : 01 23 45 67 89" />
+          </div>
+
+          <div>
+            <label class="field-label" for="emailInput">Email</label>
+            <input id="emailInput" class="text-input" type="email" placeholder="Ex : contact@salon.fr" />
+          </div>
+
+          <div>
+            <label class="field-label" for="subscriptionInput">Statut abonnement</label>
+            <select id="subscriptionInput" class="select-input">
+              <option value="trial">trial</option>
+              <option value="active">active</option>
+              <option value="suspended">suspended</option>
+            </select>
+          </div>
+
+          <div class="field-full">
+            <label class="field-label" for="googleBusinessInput">Nom Google Business</label>
+            <input id="googleBusinessInput" class="text-input" type="text" placeholder="Ex : Franck Provost Le Raincy" />
+          </div>
+
+          <div class="field-full">
+            <label class="field-label" for="googleMapsInput">Lien Google Maps</label>
+            <input id="googleMapsInput" class="text-input" type="text" placeholder="Ex : https://maps.google.com/..." />
+          </div>
+
+          <div class="field-full">
+            <label class="field-label" for="googleReviewInput">Lien Google avis</label>
+            <input id="googleReviewInput" class="text-input" type="text" placeholder="Ex : https://g.page/r/.../review" />
+          </div>
+
+          <div class="field-full">
+            <label class="field-label" for="notesInput">Notes</label>
+            <input id="notesInput" class="text-input" type="text" placeholder="Ex : Salon pilote SHORTA" />
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button id="createSalonBtn" class="btn btn-primary">Créer le salon</button>
+          <button id="clearFormBtn" class="btn btn-secondary">Vider le formulaire</button>
+        </div>
+
+        <div id="createStatus" class="create-status"></div>
+
+        <div id="createResult" class="create-result">
+          <div class="result-title">Salon créé avec succès</div>
+          <div id="createResultLines"></div>
+          <div class="result-link-row">
+            <input id="createResultLink" class="result-link-input" readonly />
+            <button id="copyCreatedLinkBtn" class="btn btn-secondary">Copier le lien borne</button>
+          </div>
+          <div class="result-qr-wrap">
+            <div class="result-qr-box">
+              <img id="createResultQr" alt="QR code borne" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2 class="panel-title">Vue rapide</h2>
+        <p class="panel-subtitle">
+          Cette version admin permet déjà de gérer plusieurs salons, de créer un nouveau client, de récupérer son lien borne et de contrôler l’activité.
+        </p>
+
+        <div class="kpis" style="margin-bottom:0;">
+          <div class="kpi-card">
+            <div class="kpi-label">Salons</div>
+            <div id="kpiSalons" class="kpi-value">0</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-label">Salons actifs</div>
+            <div id="kpiActiveSalons" class="kpi-value">0</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-label">Devices</div>
+            <div id="kpiDevices" class="kpi-value">0</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-label">Events</div>
+            <div id="kpiEvents" class="kpi-value">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h1 class="panel-title">Liste des salons</h1>
+
+      <div id="status" class="status-bar"></div>
+      <div id="errorBox" class="error-box"></div>
+
+      <div id="salonsList" class="salons-list"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+    const SUPABASE_URL = 'https://ooqgocqdggxcgnzhxjil.supabase.co'
+    const SUPABASE_ANON_KEY = 'sb_publishable_IXKLxFLH3kUhLiabQVsVKg_oXNC4jLu'
+    const APP_BASE_URL = 'https://shorta-339p.vercel.app'
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    const statusEl = document.getElementById('status')
+    const errorBoxEl = document.getElementById('errorBox')
+    const salonsListEl = document.getElementById('salonsList')
+    const searchInputEl = document.getElementById('searchInput')
+    const refreshBtnEl = document.getElementById('refreshBtn')
+
+    const kpiSalonsEl = document.getElementById('kpiSalons')
+    const kpiActiveSalonsEl = document.getElementById('kpiActiveSalons')
+    const kpiDevicesEl = document.getElementById('kpiDevices')
+    const kpiEventsEl = document.getElementById('kpiEvents')
+
+    const nameInputEl = document.getElementById('nameInput')
+    const cityInputEl = document.getElementById('cityInput')
+    const addressInputEl = document.getElementById('addressInput')
+    const phoneInputEl = document.getElementById('phoneInput')
+    const emailInputEl = document.getElementById('emailInput')
+    const subscriptionInputEl = document.getElementById('subscriptionInput')
+    const googleBusinessInputEl = document.getElementById('googleBusinessInput')
+    const googleMapsInputEl = document.getElementById('googleMapsInput')
+    const googleReviewInputEl = document.getElementById('googleReviewInput')
+    const notesInputEl = document.getElementById('notesInput')
+    const createSalonBtnEl = document.getElementById('createSalonBtn')
+    const clearFormBtnEl = document.getElementById('clearFormBtn')
+    const createStatusEl = document.getElementById('createStatus')
+    const createResultEl = document.getElementById('createResult')
+    const createResultLinesEl = document.getElementById('createResultLines')
+    const createResultLinkEl = document.getElementById('createResultLink')
+    const copyCreatedLinkBtnEl = document.getElementById('copyCreatedLinkBtn')
+    const createResultQrEl = document.getElementById('createResultQr')
+
+    let allSalons = []
+
+    function setStatus(message) {
+      statusEl.textContent = message
+    }
+
+    function showError(message) {
+      errorBoxEl.style.display = 'block'
+      errorBoxEl.textContent = message
+      console.error(message)
+    }
+
+    function hideError() {
+      errorBoxEl.style.display = 'none'
+      errorBoxEl.textContent = ''
+    }
+
+    function setCreateStatus(message) {
+      createStatusEl.textContent = message
+    }
+
+    function hideCreateResult() {
+      createResultEl.style.display = 'none'
+      createResultLinesEl.innerHTML = ''
+      createResultLinkEl.value = ''
+      createResultQrEl.src = ''
+    }
+
+    function showCreateResult({ salonCode, slug, kioskUrl, salonName, city }) {
+      createResultEl.style.display = 'block'
+      createResultLinesEl.innerHTML = `
+        <div class="result-line"><strong>Salon :</strong> ${safeText(salonName)}</div>
+        <div class="result-line"><strong>Ville :</strong> ${safeText(city)}</div>
+        <div class="result-line"><strong>Code salon :</strong> ${safeText(salonCode)}</div>
+        <div class="result-line"><strong>Slug :</strong> ${safeText(slug)}</div>
+      `
+      createResultLinkEl.value = kioskUrl
+      createResultQrEl.src = buildQrImageUrl(kioskUrl)
+    }
+
+    function getSubscriptionBadgeClass(value) {
+      const normalized = String(value || '').toLowerCase()
+
+      if (normalized === 'trial') return 'badge badge-trial'
+      if (normalized === 'active') return 'badge badge-active'
+      if (normalized === 'suspended') return 'badge badge-suspended'
+
+      return 'badge badge-default'
+    }
+
+    function formatDate(value) {
+      if (!value) return '—'
+      return new Date(value).toLocaleString('fr-FR')
+    }
+
+    function safeText(value) {
+      if (value === null || value === undefined || value === '') return '—'
+      return String(value)
+    }
+
+    function slugify(value) {
+      return String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .replace(/-+/g, '-')
+    }
+
+    function makeSalonCode(name, city) {
+      const base = (String(name || '') + '_' + String(city || ''))
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase()
+        .replace(/[^A-Z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, '')
+        .replace(/_+/g, '_')
+
+      const suffix = Math.floor(Math.random() * 900 + 100)
+      return base + '_' + suffix
+    }
+
+    function buildQrImageUrl(targetUrl) {
+      return 'https://api.qrserver.com/v1/create-qr-code/?size=420x420&data=' + encodeURIComponent(targetUrl)
+    }
+
+    function updateKpis(salons) {
+      const salonsCount = salons.length
+      const activeSalonsCount = salons.filter(s => s.is_active).length
+      const devicesCount = salons.reduce((sum, s) => sum + Number(s.devices_count || 0), 0)
+      const eventsCount = salons.reduce((sum, s) => sum + Number(s.events_count || 0), 0)
+
+      kpiSalonsEl.textContent = salonsCount
+      kpiActiveSalonsEl.textContent = activeSalonsCount
+      kpiDevicesEl.textContent = devicesCount
+      kpiEventsEl.textContent = eventsCount
+    }
+
+    function getFilteredSalons() {
+      const q = searchInputEl.value.trim().toLowerCase()
+
+      if (!q) return allSalons
+
+      return allSalons.filter((salon) => {
+        const haystack = [
+          salon.name,
+          salon.city,
+          salon.salon_code,
+          salon.slug,
+          salon.subscription_status,
+          salon.google_business_name,
+          salon.email,
+          salon.phone
+        ]
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase()
+
+        return haystack.includes(q)
+      })
+    }
+
+    function renderSalons() {
+      const salons = getFilteredSalons()
+      updateKpis(salons)
+
+      if (!salons.length) {
+        salonsListEl.innerHTML = '<div class="empty-state">Aucun salon trouvé.</div>'
+        return
+      }
+
+      salonsListEl.innerHTML = salons.map((salon) => {
+        return `
+          <div class="salon-card" id="salon-card-${salon.salon_id}">
+            <div class="salon-top">
+              <div class="salon-main">
+                <div class="salon-name">${safeText(salon.name)}</div>
+                <div class="salon-meta">
+                  <strong>Code salon :</strong> ${safeText(salon.salon_code)}<br />
+                  <strong>Slug :</strong> ${safeText(salon.slug)}<br />
+                  <strong>Ville :</strong> ${safeText(salon.city)}<br />
+                  <strong>Email :</strong> ${safeText(salon.email)}<br />
+                  <strong>Téléphone :</strong> ${safeText(salon.phone)}
+                </div>
+
+                <div class="badges">
+                  <span class="${getSubscriptionBadgeClass(salon.subscription_status)}">
+                    ${safeText(salon.subscription_status)}
+                  </span>
+
+                  <span class="badge ${salon.is_active ? 'badge-active' : 'badge-suspended'}">
+                    ${salon.is_active ? 'Actif' : 'Inactif'}
+                  </span>
+                </div>
+              </div>
+
+              <div class="salon-stats">
+                <div class="mini-stat">
+                  <div class="mini-stat-label">Avis Google</div>
+                  <div class="mini-stat-value">${safeText(salon.latest_review_count ?? salon.google_review_count ?? 0)}</div>
+                </div>
+
+                <div class="mini-stat">
+                  <div class="mini-stat-label">Note</div>
+                  <div class="mini-stat-value">${safeText(salon.latest_review_rating ?? '—')}</div>
+                </div>
+
+                <div class="mini-stat">
+                  <div class="mini-stat-label">Devices</div>
+                  <div class="mini-stat-value">${safeText(salon.devices_count ?? 0)}</div>
+                </div>
+
+                <div class="mini-stat">
+                  <div class="mini-stat-label">Events</div>
+                  <div class="mini-stat-value">${safeText(salon.events_count ?? 0)}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="salon-actions">
+              <button class="action-btn btn-primary" data-action="toggle-details" data-salon-id="${salon.salon_id}">
+                Voir détails
+              </button>
+            </div>
+
+            <div class="details" id="details-${salon.salon_id}">
+              <div class="details-grid">
+                <div class="detail-box">
+                  <div class="detail-title">Informations salon</div>
+
+                  <div class="detail-line"><strong>Nom :</strong> ${safeText(salon.name)}</div>
+                  <div class="detail-line"><strong>Ville :</strong> ${safeText(salon.city)}</div>
+                  <div class="detail-line"><strong>Adresse :</strong> ${safeText(salon.address)}</div>
+                  <div class="detail-line"><strong>Email :</strong> ${safeText(salon.email)}</div>
+                  <div class="detail-line"><strong>Téléphone :</strong> ${safeText(salon.phone)}</div>
+                  <div class="detail-line"><strong>Google Business :</strong> ${safeText(salon.google_business_name)}</div>
+                  <div class="detail-line"><strong>Lien Google Maps :</strong> ${safeText(salon.google_maps_url)}</div>
+                  <div class="detail-line"><strong>Lien Google avis :</strong> ${safeText(salon.google_review_url)}</div>
+                  <div class="detail-line"><strong>Dernier snapshot avis :</strong> ${formatDate(salon.latest_review_captured_at)}</div>
+                  <div class="detail-line"><strong>Créé le :</strong> ${formatDate(salon.created_at)}</div>
+                  <div class="detail-line"><strong>Notes :</strong> ${safeText(salon.notes)}</div>
+
+                  <div class="link-box" id="kiosk-link-box-${salon.salon_id}">
+                    <input class="link-input" readonly value="Chargement du lien borne..." />
+                  </div>
+
+                  <div id="kiosk-qr-box-${salon.salon_id}" class="mini-qr" style="display:none;">
+                    <img id="kiosk-qr-img-${salon.salon_id}" alt="QR code borne" />
+                  </div>
+                </div>
+
+                <div class="detail-box">
+                  <div class="detail-title">Devices</div>
+                  <div id="devices-${salon.salon_id}" class="muted">Chargement...</div>
+                </div>
+              </div>
+
+              <div class="detail-box" style="margin-top: 18px;">
+                <div class="detail-title">Derniers events</div>
+                <div id="events-${salon.salon_id}" class="muted">Chargement...</div>
+              </div>
+            </div>
+          </div>
+        `
+      }).join('')
+
+      attachCardActions()
+    }
+
+    async function loadDashboard() {
+      try {
+        hideError()
+        setStatus('Chargement des salons...')
+
+        const { data, error } = await supabase
+          .from('salon_dashboard_summary')
+          .select('*')
+          .order('created_at', { ascending: false })
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        allSalons = data || []
+
+        renderSalons()
+        setStatus(allSalons.length + ' salon(s) chargé(s).')
+      } catch (error) {
+        setStatus('Erreur')
+        showError('Erreur chargement dashboard : ' + error.message)
+      }
+    }
+
+    async function loadSalonDetails(salonId, salonCode) {
+      const devicesContainer = document.getElementById('devices-' + salonId)
+      const eventsContainer = document.getElementById('events-' + salonId)
+      const kioskLinkBox = document.getElementById('kiosk-link-box-' + salonId)
+      const kioskQrBox = document.getElementById('kiosk-qr-box-' + salonId)
+      const kioskQrImg = document.getElementById('kiosk-qr-img-' + salonId)
+
+      devicesContainer.textContent = 'Chargement...'
+      eventsContainer.textContent = 'Chargement...'
+
+      try {
+        const { data: devices, error: devicesError } = await supabase
+          .from('devices')
+          .select('id, device_code, label, is_active, created_at')
+          .eq('salon_id', salonId)
+          .order('created_at', { ascending: false })
+
+        if (devicesError) {
+          throw new Error(devicesError.message)
+        }
+
+        const { data: events, error: eventsError } = await supabase
+          .from('events')
+          .select('id, event_type, event_value, payload, created_at, device_id')
+          .eq('salon_id', salonId)
+          .order('created_at', { ascending: false })
+          .limit(20)
+
+        if (eventsError) {
+          throw new Error(eventsError.message)
+        }
+
+        if (!devices || !devices.length) {
+          devicesContainer.innerHTML = '<div class="muted">Aucun device.</div>'
+          kioskLinkBox.innerHTML = '<input class="link-input" readonly value="Aucun device configuré" />'
+          kioskQrBox.style.display = 'none'
+        } else {
+          devicesContainer.innerHTML = devices.map((device) => {
+            return `
+              <div class="device-item">
+                <strong>${safeText(device.label)}</strong><br />
+                Code : ${safeText(device.device_code)}<br />
+                Statut : ${device.is_active ? 'Actif' : 'Inactif'}<br />
+                Créé le : ${formatDate(device.created_at)}
+              </div>
+            `
+          }).join('')
+
+          const firstDevice = devices[0]
+          const kioskUrl = APP_BASE_URL + '/kiosk/' + encodeURIComponent(salonCode) + '/' + encodeURIComponent(firstDevice.device_code)
+
+          kioskLinkBox.innerHTML = `
+            <input class="link-input" readonly value="${kioskUrl}" />
+            <button class="action-btn btn-secondary" data-copy="${kioskUrl}">Copier le lien borne</button>
+          `
+
+          kioskQrImg.src = buildQrImageUrl(kioskUrl)
+          kioskQrBox.style.display = 'inline-block'
+        }
+
+        if (!events || !events.length) {
+          eventsContainer.innerHTML = '<div class="muted">Aucun event.</div>'
+        } else {
+          const deviceMap = {}
+          devices.forEach((device) => {
+            deviceMap[device.id] = device.device_code
+          })
+
+          eventsContainer.innerHTML = events.map((event) => {
+            return `
+              <div class="event-item">
+                <strong>${safeText(event.event_type)}</strong> — ${safeText(event.event_value)}<br />
+                Device : ${safeText(deviceMap[event.device_id] || '—')}<br />
+                Date : ${formatDate(event.created_at)}
+              </div>
+            `
+          }).join('')
+        }
+
+        attachCopyButtons()
+      } catch (error) {
+        devicesContainer.innerHTML = '<div class="muted">Erreur devices : ' + error.message + '</div>'
+        eventsContainer.innerHTML = '<div class="muted">Erreur events : ' + error.message + '</div>'
+      }
+    }
+
+    function attachCopyButtons() {
+      const copyButtons = document.querySelectorAll('[data-copy]')
+
+      copyButtons.forEach((button) => {
+        button.onclick = async () => {
+          const text = button.getAttribute('data-copy') || ''
+
+          try {
+            await navigator.clipboard.writeText(text)
+            const initial = button.textContent
+            button.textContent = 'Lien copié'
+            setTimeout(() => {
+              button.textContent = initial
+            }, 1200)
+          } catch (error) {
+            alert('Impossible de copier automatiquement. Voici le lien :\n\n' + text)
+          }
+        }
+      })
+    }
+
+    function attachCardActions() {
+      const toggleButtons = document.querySelectorAll('[data-action="toggle-details"]')
+
+      toggleButtons.forEach((button) => {
+        button.onclick = async () => {
+          const salonId = button.getAttribute('data-salon-id')
+          const detailsEl = document.getElementById('details-' + salonId)
+          const salon = allSalons.find((s) => s.salon_id === salonId)
+
+          if (!detailsEl || !salon) return
+
+          const isOpen = detailsEl.style.display === 'block'
+
+          if (isOpen) {
+            detailsEl.style.display = 'none'
+            button.textContent = 'Voir détails'
+            return
+          }
+
+          detailsEl.style.display = 'block'
+          button.textContent = 'Masquer détails'
+
+          await loadSalonDetails(salon.salon_id, salon.salon_code)
+        }
+      })
+    }
+
+    function clearCreateForm() {
+      nameInputEl.value = ''
+      cityInputEl.value = ''
+      addressInputEl.value = ''
+      phoneInputEl.value = ''
+      emailInputEl.value = ''
+      subscriptionInputEl.value = 'trial'
+      googleBusinessInputEl.value = ''
+      googleMapsInputEl.value = ''
+      googleReviewInputEl.value = ''
+      notesInputEl.value = ''
+      setCreateStatus('')
+      hideCreateResult()
+    }
+
+    async function createSalon() {
+      try {
+        hideCreateResult()
+        setCreateStatus('Création en cours...')
+
+        const name = nameInputEl.value.trim()
+        const city = cityInputEl.value.trim()
+        const address = addressInputEl.value.trim()
+        const phone = phoneInputEl.value.trim()
+        const email = emailInputEl.value.trim()
+        const subscriptionStatus = subscriptionInputEl.value
+        const googleBusinessName = googleBusinessInputEl.value.trim()
+        const googleMapsUrl = googleMapsInputEl.value.trim()
+        const googleReviewUrl = googleReviewInputEl.value.trim()
+        const notes = notesInputEl.value.trim()
+
+        if (!name || !city || !googleReviewUrl) {
+          throw new Error('Nom du salon, ville et lien Google avis sont obligatoires.')
+        }
+
+        let salonCode = makeSalonCode(name, city)
+        let slug = slugify(name + '-' + city)
+
+        const { data: existingCode } = await supabase
+          .from('salons')
+          .select('id')
+          .eq('salon_code', salonCode)
+
+        if (existingCode && existingCode.length > 0) {
+          salonCode = salonCode + '_' + Math.floor(Math.random() * 90 + 10)
+        }
+
+        const { data: existingSlug } = await supabase
+          .from('salons')
+          .select('id')
+          .eq('slug', slug)
+
+        if (existingSlug && existingSlug.length > 0) {
+          slug = slug + '-' + Math.floor(Math.random() * 90 + 10)
+        }
+
+        const { data: createdSalon, error: salonError } = await supabase
+          .from('salons')
+          .insert([
+            {
+              salon_code: salonCode,
+              slug: slug,
+              name: name,
+              city: city,
+              address: address || null,
+              phone: phone || null,
+              email: email || null,
+              google_business_name: googleBusinessName || null,
+              google_maps_url: googleMapsUrl || null,
+              google_review_url: googleReviewUrl,
+              google_review_count: 0,
+              google_review_count_updated_at: null,
+              subscription_status: subscriptionStatus,
+              is_active: true,
+              notes: notes || null
+            }
+          ])
+          .select()
+          .single()
+
+        if (salonError) {
+          throw new Error(salonError.message)
+        }
+
+        const { error: deviceError } = await supabase
+          .from('devices')
+          .insert([
+            {
+              salon_id: createdSalon.id,
+              device_code: 'TAB01',
+              label: 'Tablette Accueil 1',
+              is_active: true
+            }
+          ])
+
+        if (deviceError) {
+          throw new Error(deviceError.message)
+        }
+
+        const kioskUrl = APP_BASE_URL + '/kiosk/' + encodeURIComponent(salonCode) + '/TAB01'
+
+        showCreateResult({
+          salonCode,
+          slug,
+          kioskUrl,
+          salonName: name,
+          city
+        })
+
+        setCreateStatus('Salon créé avec succès.')
+        await loadDashboard()
+      } catch (error) {
+        setCreateStatus('Erreur')
+        alert(error.message)
+      }
+    }
+
+    searchInputEl.addEventListener('input', renderSalons)
+    refreshBtnEl.addEventListener('click', loadDashboard)
+    createSalonBtnEl.addEventListener('click', createSalon)
+    clearFormBtnEl.addEventListener('click', clearCreateForm)
+
+    copyCreatedLinkBtnEl.addEventListener('click', async () => {
+      const text = createResultLinkEl.value || ''
+
+      try {
+        await navigator.clipboard.writeText(text)
+        const initial = copyCreatedLinkBtnEl.textContent
+        copyCreatedLinkBtnEl.textContent = 'Lien copié'
+        setTimeout(() => {
+          copyCreatedLinkBtnEl.textContent = initial
+        }, 1200)
+      } catch (error) {
+        alert('Impossible de copier automatiquement. Voici le lien :\n\n' + text)
+      }
+    })
+
+    loadDashboard()
+  </script>
 </body>
 </html>

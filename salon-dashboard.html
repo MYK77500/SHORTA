@@ -18,7 +18,6 @@
     :root {
       --bg: #07152d;
       --panel: #1b2943;
-      --panel-2: #223252;
       --text: #ffffff;
       --muted: #9fb0d1;
       --green: #22c55e;
@@ -619,6 +618,7 @@
 
     function isInPeriod(dateValue, period) {
       if (period === 'all') return true;
+      if (!dateValue) return false;
 
       const startDate = getPeriodStartDate(period);
       if (!startDate) return true;
@@ -634,16 +634,9 @@
     }
 
     function filterReviewsByPeriod(reviewHistory, period) {
-      if (period === 'all') return reviewHistory;
+      if (period === 'all') return [...reviewHistory];
 
-      const filtered = reviewHistory.filter(row => isInPeriod(getReviewDate(row), period));
-
-      if (filtered.length > 0) return filtered;
-
-      const allSorted = [...reviewHistory].sort((a, b) => new Date(getReviewDate(a)) - new Date(getReviewDate(b)));
-      const lastRow = allSorted.length > 0 ? allSorted[allSorted.length - 1] : null;
-
-      return lastRow ? [lastRow] : [];
+      return reviewHistory.filter(row => isInPeriod(getReviewDate(row), period));
     }
 
     function computeStats(events) {
@@ -943,10 +936,10 @@
       const buttons = document.querySelectorAll('.period-btn');
 
       buttons.forEach(button => {
-        button.addEventListener('click', () => {
+        button.addEventListener('click', function () {
           buttons.forEach(btn => btn.classList.remove('active'));
-          button.classList.add('active');
-          currentPeriod = button.dataset.period;
+          this.classList.add('active');
+          currentPeriod = this.dataset.period;
           renderDashboardForPeriod();
         });
       });
@@ -966,7 +959,6 @@
         allEvents = await fetchEventsBySalonId(salonData.id);
         allReviewHistory = await fetchReviewHistoryBySalonId(salonData.id);
 
-        setupPeriodButtons();
         renderDashboardForPeriod();
       } catch (error) {
         showError("Le dashboard n’a pas pu charger les données du salon.", {
@@ -977,6 +969,7 @@
       }
     }
 
+    setupPeriodButtons();
     loadDashboard();
   </script>
 </body>
